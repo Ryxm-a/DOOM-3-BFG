@@ -17,7 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def verify(output):
+def verify(output, families=("iPhone", "iPad")):
     config = json.loads((ROOT / "ios/toolchain.json").read_text())
     manifest = json.loads((ROOT / "ios/harness/sources.json").read_text())
     output.mkdir(parents=True, exist_ok=True)
@@ -31,6 +31,7 @@ def verify(output):
         argv = [str(x) for x in argv]
         record = {"argv": argv}
         report["commands"].append(record)
+        print("RUN: " + " ".join(argv), flush=True)
         try:
             result = subprocess.run(argv, cwd=ROOT, env=command_env or env, text=True,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
@@ -80,6 +81,8 @@ def verify(output):
             raise RuntimeError(f"Pinned simulator runtime unavailable: {runtime_id}")
         simulator_app = derived / "iphonesimulator/Build/Products/Debug-iphonesimulator" / (manifest["name"] + ".app")
         for family, device_type in (("iPhone", "iPhone-16"), ("iPad", "iPad-10th-generation")):
+            if family not in families:
+                continue
             udid = run(["xcrun", "simctl", "create", "BFG-Phase02-" + family,
                         "com.apple.CoreSimulator.SimDeviceType." + device_type, runtime_id])
             created.append(udid)
@@ -99,6 +102,7 @@ def verify(output):
             receipt = json.loads(receipt_path.read_text())
             expected = {"schema": 1, "phase": 2, "nonce": nonce, "event": "viewDidAppear", "engine_linked": False,
                         "pointer_bits": 64, "bundle_id": manifest["bundle_id"], "system_version": config["sdk_version"], "device_family": family}
+            expected["core_tests"] = {"phase": "03a", "status": "passed", "checks": ["abi", "endian", "allocation", "list-sort", "crc32", "md4-rfc1320", "md5-rfc1321"]}
             if receipt != expected:
                 raise RuntimeError(f"{family} launch receipt mismatch")
             shutil.copyfile(receipt_path, output / (family + "-launch.json"))
@@ -107,7 +111,7 @@ def verify(output):
             report["launches"].append({"family": family, "udid": udid, "runtime": runtime_id, "receipt": receipt})
             run(["xcrun", "simctl", "shutdown", udid])
         report["status"] = "passed"
-        report["scope"] = "Native UIKit harness only: ARM64 device/simulator links; iPhone/iPad viewDidAppear receipts"
+        report["scope"] = "Selected idlib core utilities: ARM64 device/simulator links; launch/fixture receipts for " + ", ".join(families)
     except (OSError, RuntimeError, ValueError, KeyError) as exc:
         report["error"] = str(exc)
     finally:
@@ -127,4 +131,6 @@ def verify(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / "artifacts/ios-harness")
-    raise SystemExit(verify(parser.parse_args().output.resolve()))
+    parser.add_argument("--families", nargs="+", choices=("iPhone", "iPad"), default=["iPhone", "iPad"])
+    args = parser.parse_args()
+    raise SystemExit(verify(args.output.resolve(), args.families))

@@ -29,6 +29,10 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __PRECOMPILED_H__
 #define __PRECOMPILED_H__
 
+#if defined(__APPLE__) && defined(ID_IOS_CORE_LIBRARY)
+#include "../sys/ios/IdlibCore.h"
+#else
+
 #include "sys/sys_defines.h"
 #include "sys/sys_builddefines.h"
 #include "sys/sys_includes.h"
@@ -158,4 +162,5 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #undef max
 #include <algorithm>	// for min / max / swap
 
+#endif // Apple core library / complete engine header
 #endif /* !__PRECOMPILED_H__ */

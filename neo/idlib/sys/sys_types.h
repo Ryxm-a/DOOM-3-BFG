@@ -103,7 +103,7 @@ struct idNullPtr {
 //#endif
 
 // C99 Standard
-#ifndef nullptr
+#if !defined(ID_IOS) && !defined(nullptr)
 		#define nullptr	idNullPtr()		
 #endif
 
@@ -144,6 +144,8 @@ ID_INLINE void WriteIndexPair( triIndex_t * dest, const triIndex_t a, const triI
 
 #if defined(_DEBUG) || defined(_lint)
 #define NODEFAULT	default: assert( 0 )
+#elif defined(ID_IOS)
+#define NODEFAULT default: __builtin_unreachable()
 #else
 #define NODEFAULT	default: __assume( 0 )
 #endif

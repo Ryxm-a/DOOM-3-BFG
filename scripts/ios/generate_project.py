@@ -50,7 +50,7 @@ def generate():
             relative = (base / path).resolve().relative_to(ROOT).as_posix()
             # References are relative to the directory containing the .xcodeproj.
             project_path = "../" + relative
-            kind = "sourcecode.cpp.objcpp" if path.endswith(".mm") else "text"
+            kind = "sourcecode.cpp.objcpp" if path.endswith(".mm") else ("sourcecode.cpp.cpp" if path.endswith(".cpp") else "text")
             ref = add(category + path, "PBXFileReference", lastKnownFileType=kind, path=project_path, sourceTree="SOURCE_ROOT")
             files.append(ref)
             builds.append(add("build-" + category + path, "PBXBuildFile", fileRef=ref))
@@ -74,7 +74,7 @@ def generate():
             "GCC_C_LANGUAGE_STANDARD": "gnu11", "IPHONEOS_DEPLOYMENT_TARGET": toolchain["deployment_target"],
             "SDKROOT": "iphoneos", "GCC_OPTIMIZATION_LEVEL": "0" if config == "Debug" else "s",
             "DEBUG_INFORMATION_FORMAT": "dwarf" if config == "Debug" else "dwarf-with-dsym",
-            "GCC_PREPROCESSOR_DEFINITIONS": ["$(inherited)", "DEBUG=1"] if config == "Debug" else ["$(inherited)"],
+            "GCC_PREPROCESSOR_DEFINITIONS": ["$(inherited)", "ID_IOS_CORE_LIBRARY=1", "_DEBUG=1"] if config == "Debug" else ["$(inherited)", "ID_IOS_CORE_LIBRARY=1"],
         }))
         target_configs.append(add("target-" + config, "XCBuildConfiguration", name=config, buildSettings={
             "ARCHS": toolchain["device_arch"], "ONLY_ACTIVE_ARCH": "NO", "TARGETED_DEVICE_FAMILY": "1,2",

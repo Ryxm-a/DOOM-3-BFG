@@ -39,6 +39,13 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 
+#if defined(ID_IOS)
+#include <stdint.h>
+#include <stddef.h>
+#include <alloca.h>
+#include <unistd.h>
+#include <new>
+#else
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// prevent auto literal to string conversion
 
 #ifndef _D3SDK
@@ -70,6 +77,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <malloc.h>							// no malloc.h on mac or unix
 #include <windows.h>						// for qgl.h
 #undef FindText								// fix namespace pollution
+#endif
 
 /*
 ================================================================================================

@@ -55,7 +55,11 @@ bool AssertFailed( const char *file, int line, const char *expression );
 // We have the code analysis tools on the 360 compiler,
 // so let it know what our asserts are.
 // The VS ultimate editions also get it on win32, but not x86
+#if defined(ID_IOS)
+#define assert(x) idassert(x)
+#else
 #define assert( x )		__analysis_assume( x ) ; idassert( x )
+#endif
 
 #define verify( x )		( ( x ) ? true : ( AssertFailed( __FILE__, __LINE__, #x ), false ) )
 
@@ -80,14 +84,19 @@ bool AssertFailed( const char *file, int line, const char *expression );
 
 #define release_assert( x )	idreleaseassert( x )
 
-#define assert_2_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  1 ) == 0 )
-#define assert_4_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  3 ) == 0 )
-#define assert_8_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) &  7 ) == 0 )
-#define assert_16_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 15 ) == 0 )
-#define assert_32_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 31 ) == 0 )
-#define assert_64_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 63 ) == 0 )
-#define assert_128_byte_aligned( ptr )		assert( ( ((UINT_PTR)(ptr)) & 127 ) == 0 )
-#define assert_aligned_to_type_size( ptr )	assert( ( ((UINT_PTR)(ptr)) & ( sizeof( (ptr)[0] ) - 1 ) ) == 0 )
+#if defined(ID_IOS)
+#define ID_ASSERT_POINTER_UINT uintptr_t
+#else
+#define ID_ASSERT_POINTER_UINT UINT_PTR
+#endif
+#define assert_2_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) &  1 ) == 0 )
+#define assert_4_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) &  3 ) == 0 )
+#define assert_8_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) &  7 ) == 0 )
+#define assert_16_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) & 15 ) == 0 )
+#define assert_32_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) & 31 ) == 0 )
+#define assert_64_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) & 63 ) == 0 )
+#define assert_128_byte_aligned( ptr )		assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) & 127 ) == 0 )
+#define assert_aligned_to_type_size( ptr )	assert( ( ((ID_ASSERT_POINTER_UINT)(ptr)) & ( sizeof( (ptr)[0] ) - 1 ) ) == 0 )
 
 #if !defined( __TYPEINFOGEN__ ) && !defined( _lint )	// pcLint has problems with assert_offsetof()
 

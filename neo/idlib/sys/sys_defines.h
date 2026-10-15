@@ -74,11 +74,39 @@ If you have questions concerning this license or the applicable additional terms
 	#define ID_PC_WIN
 	#define ID_WIN32
 	#define ID_LITTLE_ENDIAN
+#elif defined(__APPLE__)
+	#include <TargetConditionals.h>
+	#if !TARGET_OS_IOS || !defined(__aarch64__)
+		#error The Apple port currently supports ARM64 iOS device and simulator only
+	#endif
+	#define ID_IOS
+	#define ID_APPLE
+	#define ID_LITTLE_ENDIAN
+	#define CPUSTRING "arm64"
+	#define BUILD_STRING "ios-" CPUSTRING
+	#define BUILD_OS_ID 1
+	#define ALIGN16(x) x __attribute__((aligned(16)))
+	#define ALIGNTYPE16 __attribute__((aligned(16)))
+	#define ALIGNTYPE128 __attribute__((aligned(128)))
+	#define FORMAT_PRINTF(x) __attribute__((format(printf, x, (x) + 1)))
+	#define PATHSEPARATOR_STR "/"
+	#define PATHSEPARATOR_CHAR '/'
+	#define NEWLINE "\n"
+	#define ID_INLINE inline
+	#define ID_FORCE_INLINE inline __attribute__((always_inline))
+	#define ID_INLINE_EXTERN inline
+	#define ID_FORCE_INLINE_EXTERN ID_FORCE_INLINE
+	#define VERIFY_FORMAT_STRING
+	#define NO_RETURN __attribute__((noreturn))
 #else
 #error Unknown Platform
 #endif
 
+#if defined(ID_IOS)
+#define ID_METAL
+#else
 #define ID_OPENGL
+#endif
 
 /*
 ================================================================================================
@@ -134,8 +162,13 @@ Defines and macros usable in all code
 
 #define ALIGN( x, a ) ( ( ( x ) + ((a)-1) ) & ~((a)-1) )
 
+#if defined(ID_IOS)
+#define _alloca16(x) ((void *)ALIGN((uintptr_t)alloca(ALIGN((size_t)(x), 16) + 16), (uintptr_t)16))
+#define _alloca128(x) ((void *)ALIGN((uintptr_t)alloca(ALIGN((size_t)(x), 128) + 128), (uintptr_t)128))
+#else
 #define _alloca16( x )					((void *)ALIGN( (UINT_PTR)_alloca( ALIGN( x, 16 ) + 16 ), 16 ) )
 #define _alloca128( x )					((void *)ALIGN( (UINT_PTR)_alloca( ALIGN( x, 128 ) + 128 ), 128 ) )
+#endif
 
 #define likely( x )	( x )
 #define unlikely( x )	( x )

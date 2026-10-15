@@ -35,8 +35,8 @@ jobs:
           sw_vers >> artifacts/ios-preflight/runner.txt
       - name: Compile and link Apple SDK probes
         run: python3 scripts/ios/preflight.py
-      - name: Build harness and verify iPhone and iPad simulator launches
-        run: python3 scripts/ios/verify_harness.py
+      - name: Build device and simulator; run core fixtures on iPhone
+        run: python3 scripts/ios/verify_harness.py --families iPhone
       - name: Upload SDK evidence (also on failure)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

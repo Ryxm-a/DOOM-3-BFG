@@ -58,6 +58,7 @@ ID_INLINE void		Mem_Free( void *ptr ) { Mem_Free16( ptr ); }
 void *		Mem_ClearedAlloc( const int size, const memTag_t tag );
 char *		Mem_CopyString( const char *in );
 
+#if !defined(ID_IOS)
 ID_INLINE void *operator new( size_t s ) {
 	return Mem_Alloc( s, TAG_NEW );
 }
@@ -70,6 +71,7 @@ ID_INLINE void *operator new[]( size_t s ) {
 ID_INLINE void operator delete[]( void *p ) {
 	Mem_Free( p );
 }
+#endif
 ID_INLINE void *operator new( size_t s, memTag_t tag ) {
 	return Mem_Alloc( s, tag );
 }
@@ -357,7 +359,7 @@ ID_INLINE void idBlockAlloc<_type_,_blockSize_,memTag>::AllocNewBlock() {
 	for ( int i = 0; i < _blockSize_; i++ ) {
 		block->elements[i].next = free;
 		free = &block->elements[i];
-		assert( ( ( (UINT_PTR)free ) & ( BLOCK_ALLOC_ALIGNMENT - 1 ) ) == 0 );
+		assert_16_byte_aligned( free );
 	}
 	total += _blockSize_;
 }

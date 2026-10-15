@@ -160,3 +160,18 @@ See `docs/ios/BUILD_REQUIREMENTS.md` for the proposed secret contract.
   Local generation/stale-output/Windows-guard checks pass. All 1,115 upstream
   blobs remain unchanged through Phase 02. See `docs/ios/PHASE_02.md`.
 - Continue Phase 03 under the user's continuous-work override above.
+
+## Phase 03 decomposition (before implementation)
+
+Header review shows the upstream precompiled header imports the whole framework,
+renderer, gameplay and Windows threading even for checksum sources. Keep Phase 03's
+full gate, with two sequential subphases to isolate those dependencies:
+
+- 03a: Apple platform defines/includes/types/asserts, real Apple heap allocation,
+  basic list/sort containers and CRC32/MD4/MD5. Gate: real ARM64 device/simulator
+  compilation; simulator width/alignment/endian/allocation and known hash vectors.
+- 03b: core string utilities and hash-index containers, removing framework coupling
+  needed for their standalone build. Gate: actual device/simulator compile and
+  string/container fixtures. Phase 03 is COMPLETE only after both subgates pass.
+
+No renderer, math/SIMD library or concurrency completion is inferred from 03a.

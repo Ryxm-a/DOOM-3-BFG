@@ -1,7 +1,15 @@
 {
   "name": "DoomBFGHarness",
   "bundle_id": "org.doom3bfg.ios.harness",
-  "sources": ["main.mm"],
+  "sources": [
+    "main.mm",
+    "../tests/CoreTests.cpp",
+    "../../neo/sys/ios/AppleHeap.cpp",
+    "../../neo/sys/ios/AppleAssertions.cpp",
+    "../../neo/idlib/hashing/CRC32.cpp",
+    "../../neo/idlib/hashing/MD4.cpp",
+    "../../neo/idlib/hashing/MD5.cpp"
+  ],
   "resources": ["../../COPYING.txt"],
   "frameworks": ["UIKit", "Foundation"],
   "info_plist": "Info.plist"
