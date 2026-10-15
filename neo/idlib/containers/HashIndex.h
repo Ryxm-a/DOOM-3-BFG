@@ -46,6 +46,9 @@ public:
 	static const int NULL_INDEX = -1;
 					idHashIndex();
 					idHashIndex( const int initialHashSize, const int initialIndexSize );
+#if defined(ID_IOS)
+					idHashIndex( const idHashIndex &other );
+#endif
 					~idHashIndex();
 
 					// returns total size of allocated memory
@@ -128,6 +131,15 @@ idHashIndex::idHashIndex
 ID_INLINE idHashIndex::idHashIndex( const int initialHashSize, const int initialIndexSize ) {
 	Init( initialHashSize, initialIndexSize );
 }
+
+#if defined(ID_IOS)
+// The implicit copy constructor aliases owning pointers; assignment already
+// implements the required deep copy. Keep the upstream Windows path intact.
+ID_INLINE idHashIndex::idHashIndex( const idHashIndex &other ) {
+	Init( other.hashSize, other.indexSize );
+	*this = other;
+}
+#endif
 
 /*
 ================

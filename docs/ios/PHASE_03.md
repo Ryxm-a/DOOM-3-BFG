@@ -109,3 +109,11 @@ was written. Phase 03 remains OPEN. Its report did not capture app stdio; added
 explicit stdout/stderr redirection and app-filtered simulator/crash diagnostics
 on missing receipts to identify and repair the actual runtime failure. No tests
 were weakened or removed.
+
+Source inspection then found a concrete ownership defect in the exercised path:
+`idHashIndex` has deep-copy assignment but no copy constructor, so copy
+construction aliases both owning buffers. The fixture frees the original and
+later destroys the copy, exposing use-after-free/double-free. Added an Apple-only
+copy constructor that initializes an empty index and invokes existing deep-copy
+assignment; Windows's original constructor path is preserved. The unchanged
+fixture plus new diagnostics must pass a fresh CI run before 03b closes.
