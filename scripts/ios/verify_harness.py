@@ -4,10 +4,12 @@ Requires the pinned macOS/Xcode environment. No engine, assets, signing or IPA.
 Evidence includes full commands, simulator receipts and screenshots, even on failure.
 """
 import argparse
+from collections import Counter
 import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -80,8 +82,16 @@ def verify(output, families=("iPhone", "iPad")):
             library = app.parent / "libDoomIdlib.a"
             if run(["xcrun", "lipo", "-archs", library]) != arch:
                 raise RuntimeError(f"Unexpected idlib archive architecture for {sdk}")
-            run(["xcrun", "ar", "-t", library])
-            run(["xcrun", "otool", "-l", library])
+            members = run(["xcrun", "ar", "-t", library]).splitlines()
+            actual_objects = Counter(member.strip() for member in members if member.strip().endswith(".o"))
+            expected_objects = Counter(Path(source).stem + ".o" for source in manifest["library_sources"])
+            if actual_objects != expected_objects:
+                raise RuntimeError(f"{sdk} archive member list differs from the explicit source manifest")
+            loads = run(["xcrun", "otool", "-l", library])
+            platforms = re.findall(r"^\s*platform\s+(\d+)\s*$", loads, flags=re.MULTILINE)
+            expected_platform = "2" if sdk == "iphoneos" else "7"
+            if len(platforms) != sum(expected_objects.values()) or set(platforms) != {expected_platform}:
+                raise RuntimeError(f"{sdk} archive contains missing or mismatched Mach-O platform metadata")
         runtimes = json.loads(run(["xcrun", "simctl", "list", "runtimes", "--json"]))["runtimes"]
         runtime_id = "com.apple.CoreSimulator.SimRuntime.iOS-" + config["sdk_version"].replace(".", "-")
         if not any(r["identifier"] == runtime_id and r.get("isAvailable") for r in runtimes):

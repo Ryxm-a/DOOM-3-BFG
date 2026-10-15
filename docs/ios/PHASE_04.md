@@ -49,3 +49,25 @@ archive's architecture, member list and load commands in addition to app metadat
 Local generation/audit/Python syntax/whitespace and Windows guard/stale-project
 checks pass. Actual macOS evidence is pending for the current source. No phase
 completion, complete idlib/SIMD, engine, renderer, signing or IPA is claimed.
+
+Current CI source: `a210540bed160c79944b646c4748ff03e3c93648`.
+Run [38666120871](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38666120871),
+verification pending. Earlier runs 38665335564 and 38665474416 were cancelled
+when the ODE/Polynomial ownership fixes superseded their commits; neither is
+passing evidence. Original Windows project/platform path diff remains empty.
+
+Run 38666120871 compiled both static libraries and apps, but its console captured
+an ODE fixture assertion (MathTests.cpp:69). Source review identified adaptive
+RK4 restarting the second half-step from the original state, and using the
+first half-step's derivative in its final second-half sum. Apple now retains
+the first half-step state and advances the second half from it using `d1half`.
+Windows's original statements are preserved under their branch. The original
+constant-derivative checks remain; an exponential derivative fixture now checks
+the corrected state-dependent integration too. Gate remains OPEN pending rerun.
+
+The failed run's build evidence was inspected: all 18 declared objects exist in
+each archive; every device object has Mach-O platform 2 (IOS), every simulator
+object platform 7 (IOSSIMULATOR). The actual compiler command includes
+`-fno-strict-aliasing`. The verifier now enforces archive membership and per-object
+platform metadata against the manifest as well as archive architecture. These
+successful build checks do not substitute for the failed runtime gate.

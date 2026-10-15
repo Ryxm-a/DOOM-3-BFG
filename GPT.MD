@@ -208,3 +208,10 @@ interfaces; real thread/job lifecycle stress remains Phase 05. Phase 04 closes
 only after both subgates pass. x86-only SIMD/benchmark implementations are kept
 for Windows and excluded from the Apple source manifest, with real scalar Apple
 dispatch supplied separately. No NEON backend is claimed.
+
+04a current source `a210540bed160c79944b646c4748ff03e3c93648`, run
+https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38666120871 is pending verification.
+The project builds a real DoomIdlib static archive, links the fixture app, and
+checks scalar transforms, all ODE integrators, polynomial ownership and exact
+serialization bytes. Earlier 04a commits were superseded by ownership review
+fixes; no 04a pass is claimed yet. See `docs/ios/PHASE_04.md`.

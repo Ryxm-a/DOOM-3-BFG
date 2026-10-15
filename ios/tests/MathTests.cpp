@@ -14,6 +14,11 @@ static void ConstantDerivative(float time, const void *user, const float *state,
     derivatives[1] = -1.0f;
 }
 
+static void ExponentialDerivative(float time, const void *user, const float *state, float *derivatives) {
+    (void)time; (void)user;
+    derivatives[0] = state[0];
+}
+
 extern "C" const char *BFG_RunMathTests() {
     static_assert(sizeof(idVec3) == 12 && sizeof(idMat3) == 36, "Serialized vector/matrix widths");
     static_assert(sizeof(idQuat) == 16 && sizeof(idPlane) == 16, "Serialized quaternion/plane widths");
@@ -63,11 +68,20 @@ extern "C" const char *BFG_RunMathTests() {
     idODE_RK4Adaptive adaptive(2, ConstantDerivative, nullptr);
     const float state[2] = {1.0f, 3.0f};
     float next[2] = {};
-    idODE *integrators[] = {&euler, &midpoint, &integrator, &adaptive};
-    for (idODE *method : integrators) {
-        method->Evaluate(state, next, 0.0f, 0.5f);
+    struct IntegratorFixture { const char *name; idODE *method; };
+    const IntegratorFixture integrators[] = {{"Euler", &euler}, {"Midpoint", &midpoint}, {"RK4", &integrator}, {"RK4Adaptive", &adaptive}};
+    for (const auto &fixture : integrators) {
+        fixture.method->Evaluate(state, next, 0.0f, 0.5f);
+        if (!Near(next[0], 2.0f) || !Near(next[1], 2.5f)) {
+            fprintf(stderr, "ODE %s: got %g, %g; expected 2, 2.5\n", fixture.name, next[0], next[1]);
+        }
         RequireMath(Near(next[0], 2.0f) && Near(next[1], 2.5f));
     }
+    idODE_RK4Adaptive exponential(1, ExponentialDerivative, nullptr);
+    const float one[1] = {1.0f};
+    float result[1] = {};
+    exponential.Evaluate(one, result, 0.0f, 0.5f);
+    RequireMath(Near(result[0], expf(0.5f), 0.0001f));
 
     // Exact little-endian IEEE-754 bytes, independent of pointer/long width.
     const idVec3 serialized(1.0f, -2.0f, 0.5f);

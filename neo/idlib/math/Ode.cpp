@@ -310,26 +310,49 @@ float idODE_RK4Adaptive::Evaluate( const float *state, float *newState, float t0
 		}
 
 		// first step of second half delta
+#if defined(ID_IOS)
+		// Retain the completed first half-step while tmpState holds stages.
+		// The second half must start here, not at the original input state.
+		for ( i = 0; i < dimension; i++ ) {
+			newState[i] = tmpState[i];
+		}
+#endif
 		derive( t0 + halfDelta, userData, tmpState, d1half );
 		for ( i = 0; i < dimension; i++ ) {
+#if defined(ID_IOS)
+			tmpState[i] = newState[i] + fourthDelta * d1half[i];
+#else
 			tmpState[i] = state[i] + fourthDelta * d1half[i];
+#endif
 		}
 		// second step of second half delta
 		derive( t0 + halfDelta + fourthDelta, userData, tmpState, d2 );
 		for ( i = 0; i < dimension; i++ ) {
+#if defined(ID_IOS)
+			tmpState[i] = newState[i] + fourthDelta * d2[i];
+#else
 			tmpState[i] = state[i] + fourthDelta * d2[i];
+#endif
 		}
 		// third step of second half delta
 		derive( t0 + halfDelta + fourthDelta, userData, tmpState, d3 );
 		for ( i = 0; i < dimension; i++ ) {
+#if defined(ID_IOS)
+			tmpState[i] = newState[i] + halfDelta * d3[i];
+#else
 			tmpState[i] = state[i] + halfDelta * d3[i];
+#endif
 		}
 		// fourth step of second half delta
 		derive( t0 + delta, userData, tmpState, d4 );
 
 		sixthDelta = halfDelta * (1.0/6.0);
 		for ( i = 0; i < dimension; i++ ) {
+#if defined(ID_IOS)
+			newState[i] += sixthDelta * (d1half[i] + 2.0 * (d2[i] + d3[i]) + d4[i]);
+#else
 			newState[i] = state[i] + sixthDelta * (d1[i] + 2.0 * (d2[i] + d3[i]) + d4[i]);
+#endif
 		}
 
 		// first step of full delta
