@@ -71,3 +71,17 @@ object platform 7 (IOSSIMULATOR). The actual compiler command includes
 `-fno-strict-aliasing`. The verifier now enforces archive membership and per-object
 platform metadata against the manifest as well as archive architecture. These
 successful build checks do not substitute for the failed runtime gate.
+
+Corrective CI source: `39cad0081f68d0965fd8304d7943a1d30888485a`.
+Run [38667045694](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38667045694), pending.
+
+## 04a final gate — PASS
+
+Run 38667045694 at `39cad0081f68d0965fd8304d7943a1d30888485a` completed
+successfully. Downloaded evidence confirms both ARM64 archives contain all 18
+declared objects, all objects have the correct IOS/IOSSIMULATOR metadata, both
+apps link, and iPhone iOS 18.5 emits a nonce receipt passing the ten Phase 03
+regressions plus scalar-math, vector-matrix, quat-plane, polynomial-ode and
+serialization fixtures. The original ODE checks and added exponential case pass.
+The earlier failure history is retained above and superseded by this final pass.
+04a is COMPLETE; 04b is next and Phase 04 remains OPEN.

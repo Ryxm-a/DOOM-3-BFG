@@ -57,7 +57,11 @@ public:
 ===============================================================================
 */
 
+#if defined(ID_IOS)
+#define VPCALL
+#else
 #define VPCALL __fastcall
+#endif
 
 class idVec2;
 class idVec3;

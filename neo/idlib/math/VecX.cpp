@@ -36,7 +36,11 @@ If you have questions concerning this license or the applicable additional terms
 //===============================================================
 
 float	idVecX::temp[VECX_MAX_TEMP+4];
+#if defined(ID_IOS)
+float *idVecX::tempPtr = reinterpret_cast<float *>((reinterpret_cast<uintptr_t>(idVecX::temp) + 15) & ~uintptr_t(15));
+#else
 float *	idVecX::tempPtr = (float *) ( ( (int) idVecX::temp + 15 ) & ~15 );
+#endif
 int		idVecX::tempIndex = 0;
 
 /*

@@ -68,7 +68,12 @@ ID_INLINE int idRandom::GetSeed() const {
 }
 
 ID_INLINE int idRandom::RandomInt() {
+#if defined(ID_IOS)
+	const uint32 next = 69069u * static_cast<uint32>(seed) + 1u;
+	memcpy(&seed, &next, sizeof(seed)); // Defined 32-bit wrap, retaining the original sequence.
+#else
 	seed = 69069 * seed + 1;
+#endif
 	return ( seed & idRandom::MAX_RAND );
 }
 
@@ -111,18 +116,32 @@ public:
 	static const int		MAX_RAND = 0x7fff;
 
 private:
+#if defined(ID_IOS)
+	uint32 seed;
+	static const uint32 IEEE_ONE = 0x3f800000;
+	static const uint32 IEEE_MASK = 0x007fffff;
+#else
 	unsigned long			seed;
 
 	static const unsigned long	IEEE_ONE = 0x3f800000;
 	static const unsigned long	IEEE_MASK = 0x007fffff;
+#endif
 };
 
 ID_INLINE idRandom2::idRandom2( unsigned long seed ) {
+#if defined(ID_IOS)
+	this->seed = static_cast<uint32>(seed);
+#else
 	this->seed = seed;
+#endif
 }
 
 ID_INLINE void idRandom2::SetSeed( unsigned long seed ) {
+#if defined(ID_IOS)
+	this->seed = static_cast<uint32>(seed);
+#else
 	this->seed = seed;
+#endif
 }
 
 ID_INLINE unsigned long idRandom2::GetSeed() const {
@@ -131,7 +150,11 @@ ID_INLINE unsigned long idRandom2::GetSeed() const {
 
 ID_INLINE int idRandom2::RandomInt() {
 	seed = 1664525L * seed + 1013904223L;
+#if defined(ID_IOS)
+	return static_cast<int>(seed & idRandom2::MAX_RAND);
+#else
 	return ( (int) seed & idRandom2::MAX_RAND );
+#endif
 }
 
 ID_INLINE int idRandom2::RandomInt( int max ) {
@@ -142,17 +165,33 @@ ID_INLINE int idRandom2::RandomInt( int max ) {
 }
 
 ID_INLINE float idRandom2::RandomFloat() {
+#if defined(ID_IOS)
+	seed = 1664525u * seed + 1013904223u;
+	const uint32 bits = IEEE_ONE | (seed & IEEE_MASK);
+	float value;
+	memcpy(&value, &bits, sizeof(value));
+	return value - 1.0f;
+#else
 	unsigned long i;
 	seed = 1664525L * seed + 1013904223L;
 	i = idRandom2::IEEE_ONE | ( seed & idRandom2::IEEE_MASK );
 	return ( ( *(float *)&i ) - 1.0f );
+#endif
 }
 
 ID_INLINE float idRandom2::CRandomFloat() {
+#if defined(ID_IOS)
+	seed = 1664525u * seed + 1013904223u;
+	const uint32 bits = IEEE_ONE | (seed & IEEE_MASK);
+	float value;
+	memcpy(&value, &bits, sizeof(value));
+	return 2.0f * value - 3.0f;
+#else
 	unsigned long i;
 	seed = 1664525L * seed + 1013904223L;
 	i = idRandom2::IEEE_ONE | ( seed & idRandom2::IEEE_MASK );
 	return ( 2.0f * ( *(float *)&i ) - 3.0f );
+#endif
 }
 
 #endif /* !__MATH_RANDOM_H__ */

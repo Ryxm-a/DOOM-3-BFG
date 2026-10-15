@@ -85,7 +85,7 @@ If you have questions concerning this license or the applicable additional terms
 	#define CPUSTRING "arm64"
 	#define BUILD_STRING "ios-" CPUSTRING
 	#define BUILD_OS_ID 1
-	#define ALIGN16(x) x __attribute__((aligned(16)))
+	#define ALIGN16(x) __attribute__((aligned(16))) x
 	#define ALIGNTYPE16 __attribute__((aligned(16)))
 	#define ALIGNTYPE128 __attribute__((aligned(128)))
 	#define FORMAT_PRINTF(x) __attribute__((format(printf, x, (x) + 1)))

@@ -5,7 +5,8 @@
     "main.mm",
     "../tests/CoreTests.cpp",
     "../tests/IdlibDiagnostics.cpp",
-    "../tests/MathTests.cpp"
+    "../tests/MathTests.cpp",
+    "../tests/SimdTests.cpp"
   ],
   "library_sources": [
     "../../neo/sys/ios/AppleHeap.cpp",
@@ -25,7 +26,18 @@
     "../../neo/idlib/math/Pluecker.cpp",
     "../../neo/idlib/math/Complex.cpp",
     "../../neo/idlib/math/Polynomial.cpp",
-    "../../neo/idlib/math/Ode.cpp"
+    "../../neo/idlib/math/Ode.cpp",
+    "../../neo/idlib/math/VecX.cpp",
+    "../../neo/idlib/math/MatX.cpp",
+    "../../neo/idlib/math/Lcp.cpp",
+    "../../neo/idlib/math/Simd_Generic.cpp",
+    "../../neo/sys/ios/AppleSimd.cpp",
+    "../../neo/idlib/bv/Sphere.cpp",
+    "../../neo/idlib/bv/Bounds.cpp",
+    "../../neo/idlib/bv/Box.cpp",
+    "../../neo/idlib/geometry/JointTransform.cpp",
+    "../../neo/idlib/geometry/DrawVert.cpp",
+    "../../neo/idlib/geometry/RenderMatrix.cpp"
   ],
   "resources": ["../../COPYING.txt"],
   "frameworks": ["UIKit", "Foundation"],

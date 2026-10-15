@@ -26,6 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 #pragma hdrstop
+#if defined(__APPLE__)
+#include <atomic>
+#endif
 #include "../precompiled.h"
 
 // this file is full of intentional case fall throughs
@@ -34,7 +37,14 @@ If you have questions concerning this license or the applicable additional terms
 // the code is correct, it can't be a NULL pointer
 //lint -e613
 
+#if defined(ID_IOS)
+static std::atomic<bool> ios_lcpShowFailures{false};
+void idLCP::SetShowFailures( bool enabled ) { ios_lcpShowFailures.store(enabled, std::memory_order_relaxed); }
+#define LCP_SHOW_FAILURES() ios_lcpShowFailures.load(std::memory_order_relaxed)
+#else
 static idCVar lcp_showFailures( "lcp_showFailures", "0", CVAR_BOOL, "show LCP solver failures" );
+#define LCP_SHOW_FAILURES() lcp_showFailures.GetBool()
+#endif
 
 const float LCP_BOUND_EPSILON			= 1e-5f;
 const float LCP_ACCEL_EPSILON			= 1e-5f;
@@ -81,7 +91,11 @@ Assumes the source and destination have the same memory alignment.
 */
 static void Multiply_SIMD( float * dst, const float * src0, const float * src1, const int count ) {
 	int i = 0;
+#if defined(ID_IOS)
+	for ( ; ( reinterpret_cast<uintptr_t>(dst) & 0xF ) != 0 && i < count; i++ ) {
+#else
 	for ( ; ( (unsigned int)dst & 0xF ) != 0 && i < count; i++ ) {
+#endif
 		dst[i] = src0[i] * src1[i];
 	}
 
@@ -129,7 +143,11 @@ Assumes the source and destination have the same memory alignment.
 */
 static void MultiplyAdd_SIMD( float * dst, const float constant, const float * src, const int count ) {
 	int i = 0;
+#if defined(ID_IOS)
+	for ( ; ( reinterpret_cast<uintptr_t>(dst) & 0xF ) != 0 && i < count; i++ ) {
+#else
 	for ( ; ( (unsigned int)dst & 0xF ) != 0 && i < count; i++ ) {
+#endif
 		dst[i] += constant * src[i];
 	}
 
@@ -2239,7 +2257,7 @@ bool idLCP_Square::Solve( const idMatX &o_m, idVecX &o_x, const idVecX &o_b, con
 
 #ifdef IGNORE_UNSATISFIABLE_VARIABLES
 	if ( numIgnored ) {
-		if ( lcp_showFailures.GetBool() ) {
+		if ( LCP_SHOW_FAILURES() ) {
 			idLib::Printf( "idLCP_Square::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
 		}
 	}
@@ -2247,7 +2265,7 @@ bool idLCP_Square::Solve( const idMatX &o_m, idVecX &o_x, const idVecX &o_b, con
 
 	// if failed clear remaining forces
 	if ( failed.Length() ) {
-		if ( lcp_showFailures.GetBool() ) {
+		if ( LCP_SHOW_FAILURES() ) {
 			idLib::Printf( "idLCP_Square::Solve: %s (%d of %d bounded variables ignored)\n", failed.c_str(), numIgnored, m.GetNumRows() - numUnbounded );
 		}
 	}
@@ -2925,7 +2943,7 @@ bool idLCP_Symmetric::Solve( const idMatX &o_m, idVecX &o_x, const idVecX &o_b, 
 
 #ifdef IGNORE_UNSATISFIABLE_VARIABLES
 	if ( numIgnored ) {
-		if ( lcp_showFailures.GetBool() ) {
+		if ( LCP_SHOW_FAILURES() ) {
 			idLib::Printf( "idLCP_Symmetric::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
 		}
 	}
@@ -2933,7 +2951,7 @@ bool idLCP_Symmetric::Solve( const idMatX &o_m, idVecX &o_x, const idVecX &o_b, 
 
 	// if failed clear remaining forces
 	if ( failed.Length() ) {
-		if ( lcp_showFailures.GetBool() ) {
+		if ( LCP_SHOW_FAILURES() ) {
 			idLib::Printf( "idLCP_Symmetric::Solve: %s (%d of %d bounded variables ignored)\n", failed.c_str(), numIgnored, m.GetNumRows() - numUnbounded );
 		}
 	}

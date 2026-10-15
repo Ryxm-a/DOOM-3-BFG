@@ -52,6 +52,9 @@ class idVecX {
 
 public:	
 	ID_INLINE					idVecX();
+#if defined(ID_IOS)
+	ID_INLINE idVecX( const idVecX &other );
+#endif
 	ID_INLINE					explicit idVecX( int length );
 	ID_INLINE					explicit idVecX( int length, float *data );
 	ID_INLINE					~idVecX();
@@ -131,6 +134,14 @@ ID_INLINE idVecX::idVecX() {
 	size = alloced = 0;
 	p = NULL;
 }
+
+#if defined(ID_IOS)
+ID_INLINE idVecX::idVecX( const idVecX &other ) {
+	size = alloced = 0;
+	p = nullptr;
+	*this = other;
+}
+#endif
 
 /*
 ========================

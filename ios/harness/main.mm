@@ -8,6 +8,7 @@ static_assert(sizeof(void *) == 8, "The harness requires a 64-bit target");
 static_assert(sizeof(std::uint32_t) == 4, "Unexpected fixed-width integer size");
 extern "C" const char *BFG_RunCoreTests();
 extern "C" const char *BFG_RunMathTests();
+extern "C" const char *BFG_RunSimdTests();
 
 @interface HarnessViewController : UIViewController
 @end
@@ -17,7 +18,7 @@ extern "C" const char *BFG_RunMathTests();
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithRed:0.07 green:0.08 blue:0.10 alpha:1.0];
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"DOOM 3 BFG\niOS port harness - Phase 04a\n\nCore and scalar math fixtures run here.\nEngine and gameplay are not integrated.";
+    label.text = @"DOOM 3 BFG\niOS port harness - Phase 04b\n\nCore, math and generic SIMD fixtures run here.\nEngine and gameplay are not integrated.";
     label.textColor = UIColor.whiteColor;
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont systemFontOfSize:22 weight:UIFontWeightMedium];
@@ -47,11 +48,14 @@ extern "C" const char *BFG_RunMathTests();
         const char *mathResult = BFG_RunMathTests();
         NSData *mathData = [[NSString stringWithUTF8String:mathResult] dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *mathTests = [NSJSONSerialization JSONObjectWithData:mathData options:0 error:nil];
+        const char *simdResult = BFG_RunSimdTests();
+        NSData *simdData = [[NSString stringWithUTF8String:simdResult] dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *simdTests = [NSJSONSerialization JSONObjectWithData:simdData options:0 error:nil];
         NSDictionary *receipt = @{
             @"schema": @1, @"phase": @2, @"nonce": nonce,
             @"event": @"viewDidAppear", @"engine_linked": @NO,
             @"pointer_bits": @(sizeof(void *) * 8), @"core_tests": coreTests,
-            @"math_tests": mathTests,
+            @"math_tests": mathTests, @"simd_tests": simdTests,
             @"bundle_id": NSBundle.mainBundle.bundleIdentifier,
             @"system_version": UIDevice.currentDevice.systemVersion,
             @"device_family": UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone"

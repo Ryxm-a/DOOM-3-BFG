@@ -209,9 +209,21 @@ only after both subgates pass. x86-only SIMD/benchmark implementations are kept
 for Windows and excluded from the Apple source manifest, with real scalar Apple
 dispatch supplied separately. No NEON backend is claimed.
 
-04a current source `a210540bed160c79944b646c4748ff03e3c93648`, run
-https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38666120871 is pending verification.
+04a source `a210540bed160c79944b646c4748ff03e3c93648`, run 38666120871,
+built all 18 device/simulator library objects with correct Mach-O metadata but
+failed the ODE runtime fixture. Adaptive RK4's second half-step restarted from
+the wrong state; the Apple branch is corrected and state-dependent checks added.
+Current source `39cad0081f68d0965fd8304d7943a1d30888485a`, run
+https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38667045694 is pending verification.
 The project builds a real DoomIdlib static archive, links the fixture app, and
 checks scalar transforms, all ODE integrators, polynomial ownership and exact
 serialization bytes. Earlier 04a commits were superseded by ownership review
-fixes; no 04a pass is claimed yet. See `docs/ios/PHASE_04.md`.
+fixes. Run 38667045694 now PASSED; downloaded/hash-verified reports confirm
+both 18-object archives, platform metadata, all Phase 03 regressions and the
+scalar math/ownership/ODE/serialization fixtures. 04a COMPLETE; continue 04b.
+Phase 04 as a whole remains OPEN. See `docs/ios/PHASE_04.md`.
+
+04b is split before further implementation into 04b1 (generic SIMD, bounds,
+dynamic math, vertex/joint/render matrices and jobs data) and 04b2 (remaining
+winding/surface/trace geometry and math templates). Both must pass macOS gates
+before Phase 04 closes. Existing in-progress 04b changes are being completed.

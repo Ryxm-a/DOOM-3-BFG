@@ -61,6 +61,9 @@ class idLCP {
 public:
 	static idLCP *	AllocSquare();		// 'A' must be a square matrix
 	static idLCP *	AllocSymmetric();	// 'A' must be a symmetric matrix
+#if defined(ID_IOS)
+	static void SetShowFailures( bool enabled ); // Standalone native diagnostic setting.
+#endif
 
 	virtual			~idLCP();
 

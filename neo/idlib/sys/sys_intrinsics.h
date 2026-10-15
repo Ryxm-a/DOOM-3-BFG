@@ -97,7 +97,11 @@ ID_FORCE_INLINE void FlushCacheLine( const void * ptr, int offset ) {
 
 ID_INLINE void Prefetch( const void * ptr, int offset ) {}
 ID_INLINE void ZeroCacheLine( void * ptr, int offset ) {
-	byte * bytePtr = (byte *)( ( ( (UINT_PTR) ( ptr ) ) + ( offset ) ) & ~( CACHE_LINE_SIZE - 1 ) );
+#if defined(ID_IOS)
+	byte * bytePtr = (byte *)(((uintptr_t)ptr + offset) & ~(uintptr_t)(CACHE_LINE_SIZE - 1));
+#else
+	byte * bytePtr = (byte *)( ( ( (ID_ASSERT_POINTER_UINT) ( ptr ) ) + ( offset ) ) & ~( CACHE_LINE_SIZE - 1 ) );
+#endif
 	memset( bytePtr, 0, CACHE_LINE_SIZE );
 }
 ID_INLINE void FlushCacheLine( const void * ptr, int offset ) {}
@@ -123,15 +127,15 @@ ID_INLINE_EXTERN int CACHE_LINE_CLEAR_OVERFLOW_COUNT( int size ) {
 
 // if the pointer is not on a cache line boundary this assumes the cache line the pointer starts in was already cleared
 #define CACHE_LINE_CLEAR_BLOCK( ptr, size )																		\
-	byte * startPtr = (byte *)( ( ( (UINT_PTR) ( ptr ) ) + CACHE_LINE_SIZE - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );	\
-	byte * endPtr = (byte *)( ( (UINT_PTR) ( ptr ) + ( size ) - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );				\
+	byte * startPtr = (byte *)( ( ( (ID_ASSERT_POINTER_UINT) ( ptr ) ) + CACHE_LINE_SIZE - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );	\
+	byte * endPtr = (byte *)( ( (ID_ASSERT_POINTER_UINT) ( ptr ) + ( size ) - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );				\
 	for ( ; startPtr <= endPtr; startPtr += CACHE_LINE_SIZE ) {													\
 		ZeroCacheLine( startPtr, 0 );																			\
 	}
 
 #define CACHE_LINE_CLEAR_BLOCK_AND_FLUSH( ptr, size )															\
-	byte * startPtr = (byte *)( ( ( (UINT_PTR) ( ptr ) ) + CACHE_LINE_SIZE - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );	\
-	byte * endPtr = (byte *)( ( (UINT_PTR) ( ptr ) + ( size ) - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );				\
+	byte * startPtr = (byte *)( ( ( (ID_ASSERT_POINTER_UINT) ( ptr ) ) + CACHE_LINE_SIZE - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );	\
+	byte * endPtr = (byte *)( ( (ID_ASSERT_POINTER_UINT) ( ptr ) + ( size ) - 1 ) & ~( CACHE_LINE_SIZE - 1 ) );				\
 	for ( ; startPtr <= endPtr; startPtr += CACHE_LINE_SIZE ) {													\
 		ZeroCacheLine( startPtr, 0 );																			\
 		FlushCacheLine( startPtr, 0 );																			\
@@ -155,6 +159,7 @@ ID_INLINE_EXTERN int CACHE_LINE_CLEAR_OVERFLOW_COUNT( int size ) {
 #define R_SHUFFLE_D( x, y, z, w )	(( (w) & 3 ) << 6 | ( (z) & 3 ) << 4 | ( (y) & 3 ) << 2 | ( (x) & 3 ))
 #endif
 
+#if !defined(ID_IOS)
 // make the intrinsics "type unsafe"
 typedef union __declspec(intrin_type) _CRT_ALIGN(16) __m128c {
 				__m128c() {}
@@ -217,4 +222,5 @@ ID_FORCE_INLINE_EXTERN __m128 _mm_div16_ps( __m128 x, __m128 y ) {
 // load idBounds::GetMaxs()
 #define _mm_loadu_bounds_1( bounds )		_mm_perm_ps( _mm_loadh_pi( _mm_load_ss( & bounds[1].x ), (__m64 *) & bounds[1].y ), _MM_SHUFFLE( 1, 3, 2, 0 ) )
 
+#endif // Windows x86 vector intrinsics; Apple uses the generic processor.
 #endif	// !__SYS_INTRIINSICS_H__

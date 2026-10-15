@@ -129,6 +129,7 @@ def verify(output, families=("iPhone", "iPad")):
                         "pointer_bits": 64, "bundle_id": manifest["bundle_id"], "system_version": config["sdk_version"], "device_family": family}
             expected["core_tests"] = {"phase": "03b", "status": "passed", "checks": ["abi", "endian", "allocation", "list-sort", "crc32", "md4-rfc1320", "md5-rfc1321", "strings", "bounded-format", "hash-index"]}
             expected["math_tests"] = {"phase": "04a", "status": "passed", "checks": ["scalar-math", "vector-matrix", "quat-plane", "polynomial-ode", "serialization"]}
+            expected["simd_tests"] = {"phase": "04b", "status": "passed", "checks": ["generic-memory-minmax", "joint-reference", "dynamic-math-lcp", "vertex-layout", "rng-32", "job-data"]}
             if receipt != expected:
                 raise RuntimeError(f"{family} launch receipt mismatch")
             shutil.copyfile(receipt_path, output / (family + "-launch.json"))
