@@ -9,9 +9,10 @@ ZIP named `.ipa`, or unsigned archive is not the final deliverable.
 
 Date: 2026-10-15 (Asia/Karachi). Branch: `codex/ios-port`.
 Preserved upstream: `1caba1979589971b5ed44e315d9ead30b278d8b4`.
-Phases 01 and 02 are complete within their stated scopes. Phase 02 has actual
+Phases 01 through 03 are complete within their stated scopes. Phase 02 has actual
 macOS CI evidence for SDK compilation and native harness launch on iPhone/iPad.
-Current work: Phase 03. Engine compilation, signing, IPA export, and gameplay
+Phase 03 compiles/tests selected real idlib utilities for both Apple targets.
+Current work: Phase 04. Complete engine linkage, signing, IPA export, and gameplay
 have **not** been verified.
 
 User override (2026-10-15): continue all phases sequentially in this chat without
@@ -81,8 +82,8 @@ an independent subphase. macOS build evidence is required from Phase 02 onward.
 | --- | --- | --- | --- |
 | 01 | Immutable inventory, dependency/platform triage, asset/signing requirements, phase plan, pinned SDK preflight workflow | Every upstream blob covered; audit regenerates identically; local tooling checks; all unavailable validation labelled | COMPLETE |
 | 02 | Obtain GitHub access, create/use writable fork, push branch, run preflight; native Xcode app harness and simulator launch | macOS CI probes pass, device harness links, simulator launches; archive/export help recorded; distinguish harness from engine | COMPLETE |
-| 03 | Apple platform defines/includes/types/asserts/allocators and core string/container/hash utilities | Selected idlib files compile for device/simulator; width/alignment/endian and allocation tests pass | CURRENT |
-| 04 | Remaining idlib math, generic SIMD, jobs data and ARM64 compatibility | idlib static library builds; representative SIMD/reference and serialization checks pass | Pending |
+| 03 | Apple platform defines/includes/types/asserts/allocators and core string/container/hash utilities | Selected idlib files compile for device/simulator; width/alignment/endian and allocation tests pass | COMPLETE |
+| 04 | Remaining idlib math, generic SIMD, jobs data and ARM64 compatibility | idlib static library builds; representative SIMD/reference and serialization checks pass | CURRENT |
 | 05 | POSIX threads, signals, timing, atomics, TLS and CPU detection | Job/thread lifecycle, wakeup, and atomic stress checks in simulator; device compile passes | Pending |
 | 06 | Bundled JPEG, zlib, amplitude and TiMidity source lists/portability | Static dependencies compile/link in both targets; decompression and image/audio fixture checks; notice manifest | Pending |
 | 07 | Apple file paths, resource container IO, directory enumeration, endian formats, save/config writes | Synthetic resource reads and sandbox round trips; no asset dependency | Pending |
@@ -180,11 +181,18 @@ No renderer, math/SIMD library or concurrency completion is inferred from 03a.
 https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38661613413 .
 Downloaded reports confirm both ARM64 builds and an iPhone iOS 18.5 receipt
 with passed ABI, endian, allocation, list/sort, CRC32, MD4 and MD5 fixtures.
-Current work: 03b. Phase 03 as a whole remains OPEN. See `docs/ios/PHASE_03.md`.
+03b has now passed; see the final evidence below and `docs/ios/PHASE_03.md`.
 
 03b first CI run 38662472580 compiled both ARM64 products but failed its runtime
 receipt gate. Added app console/crash diagnostics and found/fixed Apple's shallow
 `idHashIndex` copy construction (deep-copy assignment existed but no copy ctor).
-The unchanged fixtures are being rerun at `fe5505e95c610cab72a55f2aebb6fc52c27f7184`:
-https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38663205426 .
-Do not close Phase 03 or begin Phase 04 implementation without that runtime gate.
+Run 38663205426 built both products but hit a simctl file-redirection launch
+timeout. Managed `--console` capture now retains app output and launch diagnostics.
+The unchanged fixtures are being rerun at `47c8b944ddd1058a576c82109532e2a6036aa3e1`:
+https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38664303363 .
+The runtime gate PASSED on run 38664303363. Downloaded reports and artifact
+SHA-256 checks confirm ARM64 device/simulator builds and all ten fixture groups:
+ABI, endian, allocation, list/sort, CRC32, MD4, MD5, strings, bounded formatting,
+and hash-index ownership. No test was removed to pass the gate. Source
+`47c8b944ddd1058a576c82109532e2a6036aa3e1`, Xcode 16.4/16F6, SDK/runtime18.5,
+macos-15-arm64 image 20260907.0337.1. Phase 03 COMPLETE; continue Phase 04.

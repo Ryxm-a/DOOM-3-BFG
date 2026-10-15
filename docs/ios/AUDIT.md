@@ -64,3 +64,16 @@ phase. The full-file inventory continues to verify against the same baseline.
 This is semantic review of the new app/build harness only. Upstream engine
 subsystems remain mechanically screened and await their assigned port phases.
 CI results and exact toolchain/runner evidence are in `PHASE_02.md`.
+
+## Phase 03 review boundary
+
+Reviewed Apple conditional platform headers, core Heap operators and native heap
+backend, MD4/MD5/CRC32 implementations, selected list/sort paths, string utilities
+and HashIndex ownership/chains. Actual ARM64 device/simulator compile and iPhone
+runtime fixtures pass (see `PHASE_03.md`). Historical inventory remains unchanged;
+the port edits selected shared headers/sources conditionally and adds Apple files.
+Math/Vector headers are transitive string/hash dependencies, not proof of the
+remaining math/SIMD library. Other allocator templates, exhaustive Unicode,
+threading, framework/renderer/gameplay, assets and physical-device execution are
+not covered by Phase 03's fixtures. Original Windows projects/platform files and
+vendor notices are preserved; no Windows build was run in this session.

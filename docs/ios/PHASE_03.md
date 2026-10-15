@@ -1,6 +1,6 @@
-# Phase 03 evidence — in progress
+# Phase 03 evidence — 2026-10-15
 
-Phase 03 remains **OPEN** until both 03a and 03b pass actual macOS CI.
+Phase 03 is **COMPLETE**: both 03a and 03b passed actual macOS CI.
 The user authorized continuous phases in this chat on 2026-10-15.
 
 ## 03a implementation and review
@@ -128,3 +128,38 @@ with a managed, blocking `--console` process whose host stdio files are opened
 by Python. Receipt wait is bounded at 120 seconds for cold simulator startup;
 the full nonce/fixture/terminate requirements remain. Failure diagnostics now
 also cover launch-time errors. No passing runtime gate is inferred from this run.
+
+Managed-console run at `47c8b944ddd1058a576c82109532e2a6036aa3e1`:
+[38664303363](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38664303363), pending.
+
+## Final 03b gate — PASS
+
+Run [38664303363](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38664303363)
+at `47c8b944ddd1058a576c82109532e2a6036aa3e1` completed successfully.
+Downloaded reports confirm both ARM64 products, IOS/IOSSIMULATOR metadata,
+minimum deployment 15.0, and an iPhone iOS 18.5 nonce receipt with all ten groups
+passed: ABI, endian, allocation, list-sort, CRC32, MD4-RFC1320, MD5-RFC1321,
+strings, bounded-format, hash-index. Console capture is retained; stderr is empty.
+Xcode 16.4/16F6, SDK/runtime 18.5; runner macos-15-arm64 image 20260907.0337.1,
+macOS 15.7.9/24G830. Local generation/guard checks also pass.
+
+- [Harness artifact 11940741360](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38664303363/artifacts/11940741360):
+  SHA-256 `1ed6576414650d4950ed2e54fb3d91d95d304543f8b159343356417e1f884d17`.
+- [SDK artifact 11940751418](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38664303363/artifacts/11940751418):
+  SHA-256 `47cc7dfcbb37c1f705f8d0ea6b26a1ad987e126afabe5c4b1c8da4bb2812265a`.
+
+Both downloaded ZIP digests match GitHub metadata. Retention is 14 days; local
+evidence is under ignored `artifacts/phase02/38664303363/`. Earlier failure and
+correction history above is retained as evidence, superseded by this final pass.
+The diagnostic-only run 38663102270 was cancelled when the ownership fix was
+pushed; it is not passing evidence. No fixture was weakened or removed.
+
+Reviewed Str allocation/copy/aliasing, searches/comparison/path helpers,
+formatting and UTF-8 routines; HashIndex allocation/resizing/chains/removal and
+ownership. Runtime coverage is the explicit fixture list, not exhaustive Unicode,
+concurrency, allocator-template or engine validation. Windows targets were not
+built here. Fixture diagnostics and the excluded localization console command
+must be integrated with real framework services in later phases.
+
+Proceed directly to Phase 04 under the continuous-work authorization. No complete
+engine, renderer, asset-dependent execution, signing or IPA has been verified.
