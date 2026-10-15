@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+#include <type_traits>
 #include "../../neo/sys/ios/IdlibCore.h"
 
 #define RequireMath(value) ((value) ? (void)0 : (void)AssertFailed(__FILE__, __LINE__, #value))
@@ -17,6 +18,7 @@ extern "C" const char *BFG_RunMathTests() {
     static_assert(sizeof(idVec3) == 12 && sizeof(idMat3) == 36, "Serialized vector/matrix widths");
     static_assert(sizeof(idQuat) == 16 && sizeof(idPlane) == 16, "Serialized quaternion/plane widths");
     static_assert(offsetof(idVec3, y) == 4 && offsetof(idVec3, z) == 8, "Vector component layout");
+    static_assert(!std::is_copy_constructible<idODE_RK4>::value, "ODE owns its working buffers");
     idMath::Init();
     RequireMath(Near(idMath::Sqrt(25.0f), 5.0f));
     RequireMath(Near(idMath::Sin(idMath::HALF_PI), 1.0f));
@@ -44,6 +46,15 @@ extern "C" const char *BFG_RunMathTests() {
     RequireMath(polynomial.GetRoots(roots) == 2);
     idSort_QuickDefault<float>().Sort(roots, 2);
     RequireMath(Near(roots[0], 0.5f) && Near(roots[1], 2.0f));
+    idPolynomial copiedPolynomial = polynomial;
+    polynomial[0] = 999.0f;
+    RequireMath(Near(copiedPolynomial.GetValue(0.5f), 0.0f));
+    idPolynomial assignedPolynomial;
+    assignedPolynomial = copiedPolynomial;
+    copiedPolynomial[0] = 888.0f;
+    RequireMath(Near(assignedPolynomial.GetValue(0.5f), 0.0f));
+    const idPolynomial derivative = assignedPolynomial.GetDerivative();
+    RequireMath(Near(derivative.GetValue(2.0f), 3.0f));
     const idComplex complex = idComplex(1, 2) * idComplex(3, -4);
     RequireMath(Near(complex.r, 11.0f) && Near(complex.i, 2.0f));
     idODE_RK4 integrator(2, ConstantDerivative, nullptr);

@@ -48,6 +48,14 @@ typedef void (*deriveFunction_t)( const float t, const void *userData, const flo
 
 class idODE {
 
+#if defined(ID_IOS)
+protected:
+	idODE() = default;
+private:
+	idODE( const idODE & ) = delete;
+	idODE &operator=( const idODE & ) = delete;
+#endif
+
 public:
 	virtual				~idODE() {}
 

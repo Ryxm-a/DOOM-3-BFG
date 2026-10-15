@@ -41,6 +41,10 @@ If you have questions concerning this license or the applicable additional terms
 class idPolynomial {
 public:
 					idPolynomial();
+#if defined(ID_IOS)
+					idPolynomial( const idPolynomial &other );
+					~idPolynomial();
+#endif
 					explicit idPolynomial( int d );
 					explicit idPolynomial( float a, float b );
 					explicit idPolynomial( float a, float b, float c );
@@ -106,6 +110,19 @@ ID_INLINE idPolynomial::idPolynomial() {
 	allocated = 0;
 	coefficient = NULL;
 }
+
+#if defined(ID_IOS)
+ID_INLINE idPolynomial::idPolynomial( const idPolynomial &other ) {
+	degree = -1;
+	allocated = 0;
+	coefficient = nullptr;
+	*this = other;
+}
+
+ID_INLINE idPolynomial::~idPolynomial() {
+	Mem_Free16( coefficient );
+}
+#endif
 
 ID_INLINE idPolynomial::idPolynomial( int d ) {
 	degree = -1;
