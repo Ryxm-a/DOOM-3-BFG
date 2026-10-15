@@ -102,7 +102,7 @@ def verify(output, families=("iPhone", "iPad")):
             receipt = json.loads(receipt_path.read_text())
             expected = {"schema": 1, "phase": 2, "nonce": nonce, "event": "viewDidAppear", "engine_linked": False,
                         "pointer_bits": 64, "bundle_id": manifest["bundle_id"], "system_version": config["sdk_version"], "device_family": family}
-            expected["core_tests"] = {"phase": "03a", "status": "passed", "checks": ["abi", "endian", "allocation", "list-sort", "crc32", "md4-rfc1320", "md5-rfc1321"]}
+            expected["core_tests"] = {"phase": "03b", "status": "passed", "checks": ["abi", "endian", "allocation", "list-sort", "crc32", "md4-rfc1320", "md5-rfc1321", "strings", "bounded-format", "hash-index"]}
             if receipt != expected:
                 raise RuntimeError(f"{family} launch receipt mismatch")
             shutil.copyfile(receipt_path, output / (family + "-launch.json"))

@@ -98,6 +98,7 @@ If you have questions concerning this license or the applicable additional terms
 	#define ID_FORCE_INLINE_EXTERN ID_FORCE_INLINE
 	#define VERIFY_FORMAT_STRING
 	#define NO_RETURN __attribute__((noreturn))
+	#define ID_TLS thread_local ptrdiff_t
 #else
 #error Unknown Platform
 #endif

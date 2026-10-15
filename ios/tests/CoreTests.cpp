@@ -1,8 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "../../neo/sys/ios/IdlibCore.h"
 
-static void Require(bool value) {
-    if (!value) { AssertFailed(__FILE__, __LINE__, "core fixture failed"); }
+#define Require(value) ((value) ? (void)0 : (void)AssertFailed(__FILE__, __LINE__, #value))
+
+static int FormatV(char *output, int size, const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    const int result = idStr::vsnPrintf(output, size, format, args);
+    va_end(args);
+    return result;
 }
 
 extern "C" const char *BFG_RunCoreTests() {
@@ -92,5 +98,47 @@ extern "C" const char *BFG_RunCoreTests() {
     for (int i = 0; i < 257; ++i) { MD5_Update(&ctx, block + i, 1); }
     MD5_Final(&ctx, splitDigest);
     Require(memcmp(digest, splitDigest, 16) == 0);
-    return "{\"phase\":\"03a\",\"status\":\"passed\",\"checks\":[\"abi\",\"endian\",\"allocation\",\"list-sort\",\"crc32\",\"md4-rfc1320\",\"md5-rfc1321\"]}";
+    idStr text("base");
+    for (int i = 0; i < 400; ++i) { text.Append('x'); }
+    Require(text.Length() == 404 && text[403] == 'x');
+    idStr copied = text;
+    text = text.c_str() + 4;
+    Require(text.Length() == 400 && copied.Length() == 404);
+    Require(copied.Find("base") == 0 && copied.Find("missing") == -1);
+    Require(idStr::Icmp("BFG", "bfg") == 0);
+    Require(idStr::IHash("Hello") == idStr::IHash("hELLo"));
+    idStr path("base");
+    path.AppendPath("maps/test.map");
+    Require(path == "base/maps/test.map");
+    path.SetFileExtension("proc");
+    Require(path == "base/maps/test.proc");
+    path.StripPath();
+    Require(path == "test.proc");
+    idStr formatted;
+    formatted.Format("%s:%d", "fixture", 42);
+    Require(formatted == "fixture:42");
+    struct Guarded { char before; char data[4]; char after; } guarded = {'L', {}, 'R'};
+    Require(FormatV(guarded.data, 4, "%s", "abcd") == -1);
+    Require(memcmp(guarded.data, "abc", 4) == 0 && guarded.before == 'L' && guarded.after == 'R');
+    Require(FormatV(guarded.data, 4, "%s", "abc") == 3);
+    Require(FormatV(guarded.data, 1, "%s", "x") == -1 && guarded.data[0] == 0);
+    guarded.data[0] = 'X';
+    Require(FormatV(guarded.data, 0, "%s", "x") == -1 && guarded.data[0] == 'X');
+    Require(FormatV(nullptr, 0, "%s", "x") == -1);
+
+    idHashIndex index(16, 16);
+    for (int i = 0; i < 400; ++i) { index.Add(index.GenerateKey(i), i); }
+    for (int i = 0; i < 400; ++i) {
+        bool found = false;
+        for (int entry = index.First(index.GenerateKey(i)); entry >= 0; entry = index.Next(entry)) {
+            if (entry == i) { found = true; break; }
+        }
+        Require(found);
+    }
+    index.Remove(index.GenerateKey(17), 17);
+    for (int entry = index.First(index.GenerateKey(17)); entry >= 0; entry = index.Next(entry)) { Require(entry != 17); }
+    idHashIndex indexCopy = index;
+    index.Free();
+    Require(indexCopy.First(indexCopy.GenerateKey(399)) >= 0);
+    return "{\"phase\":\"03b\",\"status\":\"passed\",\"checks\":[\"abi\",\"endian\",\"allocation\",\"list-sort\",\"crc32\",\"md4-rfc1320\",\"md5-rfc1321\",\"strings\",\"bounded-format\",\"hash-index\"]}";
 }

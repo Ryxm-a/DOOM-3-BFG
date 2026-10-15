@@ -563,7 +563,7 @@ void idStr::Format( const char *fmt, ... ) {
 	text[ sizeof( text ) - 1 ] = '\0';
 
 	if ( (size_t)len >= sizeof( text ) - 1 ) {
-		idLib::common->FatalError( "Tried to set a large buffer using %s", fmt );
+		idLib::FatalError( "Tried to set a large buffer using %s", fmt );
 	}
 	*this = text;
 }
@@ -1397,7 +1397,7 @@ int idStr::IcmpPath( const char *s1, const char *s2 ) {
 
 #if 0
 //#if !defined( ID_PC_WIN )
-	idLib::common->Printf( "WARNING: IcmpPath used on a case-sensitive filesystem?\n" );
+	idLib::Printf( "WARNING: IcmpPath used on a case-sensitive filesystem?\n" );
 #endif
 
 	do {
@@ -1466,7 +1466,7 @@ int idStr::IcmpnPath( const char *s1, const char *s2, int n ) {
 
 #if 0
 //#if !defined( ID_PC_WIN )
-	idLib::common->Printf( "WARNING: IcmpPath used on a case-sensitive filesystem?\n" );
+	idLib::Printf( "WARNING: IcmpPath used on a case-sensitive filesystem?\n" );
 #endif
 
 	assert( n >= 0 );
@@ -1540,11 +1540,11 @@ Safe strncpy that ensures a trailing zero
 */
 void idStr::Copynz( char *dest, const char *src, int destsize ) {
 	if ( !src ) {
-		idLib::common->Warning( "idStr::Copynz: NULL src" );
+		idLib::Warning( "idStr::Copynz: NULL src" );
 		return;
 	}
 	if ( destsize < 1 ) {
-		idLib::common->Warning( "idStr::Copynz: destsize < 1" ); 
+		idLib::Warning( "idStr::Copynz: destsize < 1" );
 		return;
 	}
 
@@ -1564,7 +1564,7 @@ void idStr::Append( char *dest, int size, const char *src ) {
 
 	l1 = strlen( dest );
 	if ( l1 >= size ) {
-		idLib::common->Error( "idStr::Append: already overflowed" );
+		idLib::Error( "idStr::Append: already overflowed" );
 	}
 	idStr::Copynz( dest + l1, src, size - l1 );
 }
@@ -1812,13 +1812,19 @@ int idStr::snPrintf( char *dest, int size, const char *fmt, ...) {
 	char buffer[32000];	// big, but small enough to fit in PPC stack
 
 	va_start( argptr, fmt );
+#if defined(ID_IOS)
+#undef vsnprintf
+	len = vsnprintf( buffer, sizeof(buffer), fmt, argptr );
+#define vsnprintf use_idStr_vsnPrintf
+#else
 	len = vsprintf( buffer, fmt, argptr );
+#endif
 	va_end( argptr );
 	if ( len >= sizeof( buffer ) ) {
-		idLib::common->Error( "idStr::snPrintf: overflowed buffer" );
+		idLib::Error( "idStr::snPrintf: overflowed buffer" );
 	}
 	if ( len >= size ) {
-		idLib::common->Warning( "idStr::snPrintf: overflow of %i in %i\n", len, size );
+		idLib::Warning( "idStr::snPrintf: overflow of %i in %i\n", len, size );
 		len = size;
 	}
 	idStr::Copynz( dest, buffer, size );
@@ -1845,10 +1851,18 @@ or returns -1 on failure or if the buffer would be overflowed.
 */
 int idStr::vsnPrintf( char *dest, int size, const char *fmt, va_list argptr ) {
 	int ret;
-
+#if defined(ID_IOS)
+	if ( size <= 0 || dest == nullptr ) {
+		return -1;
+	}
+#undef vsnprintf
+	ret = vsnprintf( dest, static_cast<size_t>(size), fmt, argptr );
+#define vsnprintf use_idStr_vsnPrintf
+#else
 #undef _vsnprintf
 	ret = _vsnprintf( dest, size-1, fmt, argptr );
 #define _vsnprintf	use_idStr_vsnPrintf
+#endif
 	dest[size-1] = '\0';
 	if ( ret < 0 || ret >= size ) {
 		return -1;
@@ -1913,7 +1927,11 @@ char *va( const char *fmt, ... ) {
 	index = (index + 1) & 3;
 
 	va_start( argptr, fmt );
+#if defined(ID_IOS)
+	idStr::vsnPrintf( buf, sizeof(string[0]), fmt, argptr );
+#else
 	vsprintf( buf, fmt, argptr );
+#endif
 	va_end( argptr );
 
 	return buf;
@@ -1991,7 +2009,7 @@ idStr::ShowMemoryUsage_f
 */
 void idStr::ShowMemoryUsage_f( const idCmdArgs &args ) {
 #ifdef USE_STRING_DATA_ALLOCATOR
-	idLib::common->Printf( "%6d KB string memory (%d KB free in %d blocks, %d empty base blocks)\n",
+	idLib::Printf( "%6d KB string memory (%d KB free in %d blocks, %d empty base blocks)\n",
 		stringDataAllocator.GetBaseBlockMemory() >> 10, stringDataAllocator.GetFreeBlockMemory() >> 10,
 			stringDataAllocator.GetNumFreeBlocks(), stringDataAllocator.GetNumEmptyBaseBlocks() );
 #endif
@@ -2079,6 +2097,7 @@ idStr idStr::FormatNumber( int number ) {
 	return string;
 }
 
+#if !defined(ID_IOS_CORE_LIBRARY)
 CONSOLE_COMMAND( testStrId, "prints a localized string", 0 ) {
 	if ( args.Argc() != 2 ) {
 		idLib::Printf( "need a str id like 'STR_SWF_ACCEPT' without the hash, it gets parsed as a separate argument\n" );
@@ -2088,3 +2107,4 @@ CONSOLE_COMMAND( testStrId, "prints a localized string", 0 ) {
 	idStrId str( va( "#%s", args.Argv( 1 ) ) );
 	idLib::Printf( "%s = %s\n", args.Argv( 1 ), str.GetLocalizedString() );
 }
+#endif // Console/localization command belongs to the framework build.

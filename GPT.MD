@@ -175,3 +175,9 @@ full gate, with two sequential subphases to isolate those dependencies:
   string/container fixtures. Phase 03 is COMPLETE only after both subgates pass.
 
 No renderer, math/SIMD library or concurrency completion is inferred from 03a.
+
+03a gate PASS at `6366dd0`, macOS run
+https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38661613413 .
+Downloaded reports confirm both ARM64 builds and an iPhone iOS 18.5 receipt
+with passed ABI, endian, allocation, list/sort, CRC32, MD4 and MD5 fixtures.
+Current work: 03b. Phase 03 as a whole remains OPEN. See `docs/ios/PHASE_03.md`.

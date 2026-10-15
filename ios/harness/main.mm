@@ -16,7 +16,7 @@ extern "C" const char *BFG_RunCoreTests();
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithRed:0.07 green:0.08 blue:0.10 alpha:1.0];
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"DOOM 3 BFG\niOS port harness - Phase 03a\n\nCore idlib fixtures run here.\nEngine and gameplay are not integrated.";
+    label.text = @"DOOM 3 BFG\niOS port harness - Phase 03b\n\nCore idlib fixtures run here.\nEngine and gameplay are not integrated.";
     label.textColor = UIColor.whiteColor;
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont systemFontOfSize:22 weight:UIFontWeightMedium];

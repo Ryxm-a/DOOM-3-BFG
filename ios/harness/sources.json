@@ -4,11 +4,14 @@
   "sources": [
     "main.mm",
     "../tests/CoreTests.cpp",
+    "../tests/IdlibDiagnostics.cpp",
     "../../neo/sys/ios/AppleHeap.cpp",
     "../../neo/sys/ios/AppleAssertions.cpp",
     "../../neo/idlib/hashing/CRC32.cpp",
     "../../neo/idlib/hashing/MD4.cpp",
-    "../../neo/idlib/hashing/MD5.cpp"
+    "../../neo/idlib/hashing/MD5.cpp",
+    "../../neo/idlib/Str.cpp",
+    "../../neo/idlib/containers/HashIndex.cpp"
   ],
   "resources": ["../../COPYING.txt"],
   "frameworks": ["UIKit", "Foundation"],

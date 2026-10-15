@@ -228,6 +228,7 @@ public:
 */
 
 // System
+#if !defined(ID_IOS_CORE_LIBRARY)
 #include "sys/sys_assert.h"
 #include "sys/sys_threading.h"
 
@@ -318,5 +319,6 @@ public:
 #include "ParallelJobList.h"
 
 #include "SoftwareCache.h"
+#endif // Complete idlib imports; standalone core lists its imports explicitly.
 
 #endif	/* !__LIB_H__ */
