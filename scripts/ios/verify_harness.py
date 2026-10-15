@@ -26,6 +26,7 @@ def verify(output, families=("iPhone", "iPad")):
               "signing": "disabled for harness", "ipa_export": "not attempted"}
     env = dict(os.environ, DEVELOPER_DIR=config["developer_dir"])
     created = []
+    consoles = []
 
     def run(argv, timeout=180, command_env=None):
         argv = [str(x) for x in argv]
@@ -90,22 +91,22 @@ def verify(output, families=("iPhone", "iPad")):
             run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout=300)
             run(["xcrun", "simctl", "install", udid, simulator_app])
             nonce = uuid.uuid4().hex
-            run(["xcrun", "simctl", "launch", "--stdout=" + str(output / (family + ".stdout.log")),
-                 "--stderr=" + str(output / (family + ".stderr.log")), udid, manifest["bundle_id"]],
-                command_env=dict(env, SIMCTL_CHILD_BFG_HARNESS_NONCE=nonce))
+            # --console intentionally blocks for the app lifetime. Manage it
+            # asynchronously so app stderr is captured without simctl's file
+            # redirection path (which stalled on the hosted runner).
+            argv = ["xcrun", "simctl", "launch", "--console", udid, manifest["bundle_id"]]
+            record = {"argv": argv, "exit_code": None, "stdout_file": family + ".stdout.log", "stderr_file": family + ".stderr.log"}
+            report["commands"].append(record)
+            print("RUN (console): " + " ".join(argv), flush=True)
+            with (output / record["stdout_file"]).open("w") as stdout, (output / record["stderr_file"]).open("w") as stderr:
+                console = subprocess.Popen(argv, cwd=ROOT, env=dict(env, SIMCTL_CHILD_BFG_HARNESS_NONCE=nonce), stdout=stdout, stderr=stderr)
+            consoles.append((console, record))
             container = Path(run(["xcrun", "simctl", "get_app_container", udid, manifest["bundle_id"], "data"]))
             receipt_path = container / "Documents/phase02-launch.json"
-            deadline = time.monotonic() + 45
-            while not receipt_path.is_file() and time.monotonic() < deadline:
+            deadline = time.monotonic() + 120
+            while not receipt_path.is_file() and console.poll() is None and time.monotonic() < deadline:
                 time.sleep(0.5)
             if not receipt_path.is_file():
-                try:
-                    run(["xcrun", "simctl", "spawn", udid, "log", "show", "--last", "3m", "--style", "compact",
-                         "--predicate", 'process == "' + manifest["name"] + '"'], timeout=60)
-                except (OSError, RuntimeError):
-                    pass
-                for crash in (Path.home() / "Library/Logs/DiagnosticReports").glob(manifest["name"] + "*.ips"):
-                    shutil.copyfile(crash, output / crash.name)
                 raise RuntimeError(f"{family} did not produce a viewDidAppear receipt")
             receipt = json.loads(receipt_path.read_text())
             expected = {"schema": 1, "phase": 2, "nonce": nonce, "event": "viewDidAppear", "engine_linked": False,
@@ -123,10 +124,30 @@ def verify(output, families=("iPhone", "iPad")):
     except (OSError, RuntimeError, ValueError, KeyError) as exc:
         report["error"] = str(exc)
     finally:
+        for console, record in consoles:
+            try:
+                if console.poll() is None:
+                    console.terminate()
+                console.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                console.kill()
+                console.wait(timeout=10)
+            except OSError as exc:
+                record["cleanup_error"] = str(exc)
+            record["exit_code"] = console.poll()
+        if "error" in report:
+            for udid in created:
+                try:
+                    run(["xcrun", "simctl", "spawn", udid, "log", "show", "--last", "3m", "--style", "compact",
+                         "--predicate", 'process == "' + manifest["name"] + '"'], timeout=60)
+                except (OSError, RuntimeError):
+                    pass
+            for crash in (Path.home() / "Library/Logs/DiagnosticReports").glob(manifest["name"] + "*.ips"):
+                shutil.copyfile(crash, output / crash.name)
         for udid in created:
             for action in ("shutdown", "delete"):
                 try:
-                    run(["xcrun", "simctl", action, udid])
+                    run(["xcrun", "simctl", action, udid], timeout=60)
                 except (OSError, RuntimeError):
                     pass
         (output / "harness.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

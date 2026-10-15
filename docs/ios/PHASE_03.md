@@ -117,3 +117,14 @@ later destroys the copy, exposing use-after-free/double-free. Added an Apple-onl
 copy constructor that initializes an empty index and invokes existing deep-copy
 assignment; Windows's original constructor path is preserved. The unchanged
 fixture plus new diagnostics must pass a fresh CI run before 03b closes.
+
+Corrective run at `fe5505e95c610cab72a55f2aebb6fc52c27f7184`:
+[38663205426](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38663205426).
+This run includes the unchanged fixtures and diagnostic capture; result pending.
+
+Run 38663205426 compiled successfully but timed out inside simctl launch with
+`--stdout/--stderr` before creating console files. Replaced that capture method
+with a managed, blocking `--console` process whose host stdio files are opened
+by Python. Receipt wait is bounded at 120 seconds for cold simulator startup;
+the full nonce/fixture/terminate requirements remain. Failure diagnostics now
+also cover launch-time errors. No passing runtime gate is inferred from this run.

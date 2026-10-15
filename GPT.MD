@@ -181,3 +181,10 @@ https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38661613413 .
 Downloaded reports confirm both ARM64 builds and an iPhone iOS 18.5 receipt
 with passed ABI, endian, allocation, list/sort, CRC32, MD4 and MD5 fixtures.
 Current work: 03b. Phase 03 as a whole remains OPEN. See `docs/ios/PHASE_03.md`.
+
+03b first CI run 38662472580 compiled both ARM64 products but failed its runtime
+receipt gate. Added app console/crash diagnostics and found/fixed Apple's shallow
+`idHashIndex` copy construction (deep-copy assignment existed but no copy ctor).
+The unchanged fixtures are being rerun at `fe5505e95c610cab72a55f2aebb6fc52c27f7184`:
+https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38663205426 .
+Do not close Phase 03 or begin Phase 04 implementation without that runtime gate.
