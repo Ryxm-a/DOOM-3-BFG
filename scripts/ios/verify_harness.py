@@ -23,6 +23,7 @@ def verify(output, families=("iPhone", "iPad")):
     output.mkdir(parents=True, exist_ok=True)
     report = {"schema": 1, "status": "failed", "host": platform.system(), "machine": platform.machine(),
               "config": config, "commands": [], "launches": [], "engine_linked": False,
+              "library_sources": manifest["library_sources"],
               "signing": "disabled for harness", "ipa_export": "not attempted"}
     env = dict(os.environ, DEVELOPER_DIR=config["developer_dir"])
     created = []
@@ -76,6 +77,11 @@ def verify(output, families=("iPhone", "iPad")):
             run(["xcrun", "otool", "-L", binary])
             run(["xcrun", "vtool", "-show-build", binary])
             run(["plutil", "-p", app / "Info.plist"])
+            library = app.parent / "libDoomIdlib.a"
+            if run(["xcrun", "lipo", "-archs", library]) != arch:
+                raise RuntimeError(f"Unexpected idlib archive architecture for {sdk}")
+            run(["xcrun", "ar", "-t", library])
+            run(["xcrun", "otool", "-l", library])
         runtimes = json.loads(run(["xcrun", "simctl", "list", "runtimes", "--json"]))["runtimes"]
         runtime_id = "com.apple.CoreSimulator.SimRuntime.iOS-" + config["sdk_version"].replace(".", "-")
         if not any(r["identifier"] == runtime_id and r.get("isAvailable") for r in runtimes):
@@ -112,6 +118,7 @@ def verify(output, families=("iPhone", "iPad")):
             expected = {"schema": 1, "phase": 2, "nonce": nonce, "event": "viewDidAppear", "engine_linked": False,
                         "pointer_bits": 64, "bundle_id": manifest["bundle_id"], "system_version": config["sdk_version"], "device_family": family}
             expected["core_tests"] = {"phase": "03b", "status": "passed", "checks": ["abi", "endian", "allocation", "list-sort", "crc32", "md4-rfc1320", "md5-rfc1321", "strings", "bounded-format", "hash-index"]}
+            expected["math_tests"] = {"phase": "04a", "status": "passed", "checks": ["scalar-math", "vector-matrix", "quat-plane", "polynomial-ode", "serialization"]}
             if receipt != expected:
                 raise RuntimeError(f"{family} launch receipt mismatch")
             shutil.copyfile(receipt_path, output / (family + "-launch.json"))

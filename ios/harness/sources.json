@@ -5,13 +5,27 @@
     "main.mm",
     "../tests/CoreTests.cpp",
     "../tests/IdlibDiagnostics.cpp",
+    "../tests/MathTests.cpp"
+  ],
+  "library_sources": [
     "../../neo/sys/ios/AppleHeap.cpp",
     "../../neo/sys/ios/AppleAssertions.cpp",
     "../../neo/idlib/hashing/CRC32.cpp",
     "../../neo/idlib/hashing/MD4.cpp",
     "../../neo/idlib/hashing/MD5.cpp",
     "../../neo/idlib/Str.cpp",
-    "../../neo/idlib/containers/HashIndex.cpp"
+    "../../neo/idlib/containers/HashIndex.cpp",
+    "../../neo/idlib/math/Math.cpp",
+    "../../neo/idlib/math/Vector.cpp",
+    "../../neo/idlib/math/Matrix.cpp",
+    "../../neo/idlib/math/Angles.cpp",
+    "../../neo/idlib/math/Quat.cpp",
+    "../../neo/idlib/math/Rotation.cpp",
+    "../../neo/idlib/math/Plane.cpp",
+    "../../neo/idlib/math/Pluecker.cpp",
+    "../../neo/idlib/math/Complex.cpp",
+    "../../neo/idlib/math/Polynomial.cpp",
+    "../../neo/idlib/math/Ode.cpp"
   ],
   "resources": ["../../COPYING.txt"],
   "frameworks": ["UIKit", "Foundation"],

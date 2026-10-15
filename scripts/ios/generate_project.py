@@ -28,7 +28,7 @@ def generate():
     manifest = json.loads((ROOT / "ios/harness/sources.json").read_text())
     toolchain = json.loads((ROOT / "ios/toolchain.json").read_text())
     base = ROOT / "ios/harness"
-    for path in manifest["sources"] + manifest["resources"] + [manifest["info_plist"]]:
+    for path in manifest["sources"] + manifest["library_sources"] + manifest["resources"] + [manifest["info_plist"]]:
         resolved = (base / path).resolve()
         if not resolved.is_relative_to(ROOT) or not resolved.is_file():
             raise ValueError(f"Missing or out-of-repository manifest input: {path}")
@@ -44,8 +44,10 @@ def generate():
 
     product = add("product", "PBXFileReference", explicitFileType="wrapper.application", includeInIndex=0,
                   path=manifest["name"] + ".app", sourceTree="BUILT_PRODUCTS_DIR")
-    sources, resources, frameworks, files = [], [], [], []
-    for category, paths, builds in (("source", manifest["sources"], sources), ("resource", manifest["resources"], resources)):
+    library_product = add("library-product", "PBXFileReference", explicitFileType="archive.ar", includeInIndex=0,
+                          path="libDoomIdlib.a", sourceTree="BUILT_PRODUCTS_DIR")
+    sources, library_sources, resources, frameworks, files = [], [], [], [], []
+    for category, paths, builds in (("source", manifest["sources"], sources), ("library-source", manifest["library_sources"], library_sources), ("resource", manifest["resources"], resources)):
         for path in paths:
             relative = (base / path).resolve().relative_to(ROOT).as_posix()
             # References are relative to the directory containing the .xcodeproj.
@@ -61,13 +63,16 @@ def generate():
                   path="System/Library/Frameworks/" + framework + ".framework", sourceTree="SDKROOT")
         files.append(ref)
         frameworks.append(add("build-framework-" + framework, "PBXBuildFile", fileRef=ref))
-    products = add("products", "PBXGroup", children=[product], name="Products", sourceTree="<group>")
+    frameworks.append(add("link-idlib", "PBXBuildFile", fileRef=library_product))
+    products = add("products", "PBXGroup", children=[product, library_product], name="Products", sourceTree="<group>")
     group = add("main", "PBXGroup", children=files + [products], sourceTree="<group>")
     phases = []
     for name, isa, builds in (("sources", "PBXSourcesBuildPhase", sources), ("frameworks", "PBXFrameworksBuildPhase", frameworks),
                               ("resources", "PBXResourcesBuildPhase", resources)):
         phases.append(add(name, isa, buildActionMask=2147483647, files=builds, runOnlyForDeploymentPostprocessing=0))
-    project_configs, target_configs = [], []
+    library_phase = add("library-sources", "PBXSourcesBuildPhase", buildActionMask=2147483647,
+                        files=library_sources, runOnlyForDeploymentPostprocessing=0)
+    project_configs, target_configs, library_configs = [], [], []
     for config in ("Debug", "Release"):
         project_configs.append(add("project-" + config, "XCBuildConfiguration", name=config, buildSettings={
             "CLANG_ENABLE_MODULES": "YES", "CLANG_ENABLE_OBJC_ARC": "YES", "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
@@ -75,6 +80,12 @@ def generate():
             "SDKROOT": "iphoneos", "GCC_OPTIMIZATION_LEVEL": "0" if config == "Debug" else "s",
             "DEBUG_INFORMATION_FORMAT": "dwarf" if config == "Debug" else "dwarf-with-dsym",
             "GCC_PREPROCESSOR_DEFINITIONS": ["$(inherited)", "ID_IOS_CORE_LIBRARY=1", "_DEBUG=1"] if config == "Debug" else ["$(inherited)", "ID_IOS_CORE_LIBRARY=1"],
+            "GCC_STRICT_ALIASING": "NO", "GCC_FAST_MATH": "NO",
+        }))
+        library_configs.append(add("library-" + config, "XCBuildConfiguration", name=config, buildSettings={
+            "ARCHS": toolchain["device_arch"], "ONLY_ACTIVE_ARCH": "NO", "PRODUCT_NAME": "DoomIdlib",
+            "SUPPORTED_PLATFORMS": "iphoneos iphonesimulator", "SUPPORTS_MACCATALYST": "NO",
+            "SKIP_INSTALL": "YES", "CODE_SIGNING_ALLOWED": "NO", "CODE_SIGNING_REQUIRED": "NO",
         }))
         target_configs.append(add("target-" + config, "XCBuildConfiguration", name=config, buildSettings={
             "ARCHS": toolchain["device_arch"], "ONLY_ACTIVE_ARCH": "NO", "TARGETED_DEVICE_FAMILY": "1,2",
@@ -87,12 +98,20 @@ def generate():
                        defaultConfigurationIsVisible=0, defaultConfigurationName="Release")
     target_list = add("target-configs", "XCConfigurationList", buildConfigurations=target_configs,
                       defaultConfigurationIsVisible=0, defaultConfigurationName="Release")
+    library_list = add("library-configs", "XCConfigurationList", buildConfigurations=library_configs,
+                       defaultConfigurationIsVisible=0, defaultConfigurationName="Release")
+    library_target = add("library-target", "PBXNativeTarget", buildConfigurationList=library_list,
+                         buildPhases=[library_phase], buildRules=[], dependencies=[], name="DoomIdlib",
+                         productName="DoomIdlib", productReference=library_product, productType="com.apple.product-type.library.static")
+    proxy = add("library-proxy", "PBXContainerItemProxy", containerPortal=identifier("project"), proxyType=1,
+                remoteGlobalIDString=library_target, remoteInfo="DoomIdlib")
+    dependency = add("library-dependency", "PBXTargetDependency", target=library_target, targetProxy=proxy)
     target = add("target", "PBXNativeTarget", buildConfigurationList=target_list, buildPhases=phases, buildRules=[],
-                 dependencies=[], name=manifest["name"], productName=manifest["name"], productReference=product,
+                 dependencies=[dependency], name=manifest["name"], productName=manifest["name"], productReference=product,
                  productType="com.apple.product-type.application")
     project = add("project", "PBXProject", attributes={"LastUpgradeCheck": "1640"}, buildConfigurationList=project_list,
                   compatibilityVersion="Xcode 14.0", developmentRegion="en", hasScannedForEncodings=0,
-                  knownRegions=["en", "Base"], mainGroup=group, productRefGroup=products, projectDirPath="", projectRoot="", targets=[target])
+                  knownRegions=["en", "Base"], mainGroup=group, productRefGroup=products, projectDirPath="", projectRoot="", targets=[library_target, target])
     pbx = "// !$*UTF8*$!\n" + openstep(dict(archiveVersion=1, classes={}, objectVersion=56, objects=objects, rootObject=project)) + "\n"
     name = escape(manifest["name"])
     reference = f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{target}" BuildableName="{name}.app" BlueprintName="{name}" ReferencedContainer="container:DoomBFGHarness.xcodeproj"/>'

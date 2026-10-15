@@ -196,3 +196,15 @@ ABI, endian, allocation, list/sort, CRC32, MD4, MD5, strings, bounded formatting
 and hash-index ownership. No test was removed to pass the gate. Source
 `47c8b944ddd1058a576c82109532e2a6036aa3e1`, Xcode 16.4/16F6, SDK/runtime18.5,
 macos-15-arm64 image 20260907.0337.1. Phase 03 COMPLETE; continue Phase 04.
+
+## Phase 04 decomposition (before implementation)
+
+04a builds an actual idlib static-library target with foundational scalar math,
+vectors/matrices/quaternions and fixed-layout serialization fixtures for
+both ARM64 platforms, retaining the Phase 03 regressions.
+04b adds generic SIMD, bounds, remaining dynamic math/geometry and jobs data compatibility.
+It must pass representative SIMD/scalar references and compile the job data
+interfaces; real thread/job lifecycle stress remains Phase 05. Phase 04 closes
+only after both subgates pass. x86-only SIMD/benchmark implementations are kept
+for Windows and excluded from the Apple source manifest, with real scalar Apple
+dispatch supplied separately. No NEON backend is claimed.

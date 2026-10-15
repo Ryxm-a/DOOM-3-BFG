@@ -13,6 +13,13 @@
 			"path" = "DoomBFGHarness.app";
 			"sourceTree" = "BUILT_PRODUCTS_DIR";
 		};
+		"BE017B29C3785CCC16F23303" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "archive.ar";
+			"includeInIndex" = 0;
+			"path" = "libDoomIdlib.a";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
 		"215F99740AA7B7424080DD1D" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.objcpp";
@@ -43,75 +50,195 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "445F0D1386E294209FA27DC1";
 		};
-		"B53DCE42D01157229A70D8DA" = {
+		"1E50AF6F3EC6E9D26F2EDC3A" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../ios/tests/MathTests.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"D26EE319FBF91B1326E6C85D" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "1E50AF6F3EC6E9D26F2EDC3A";
+		};
+		"569843517CCAEA47654D5C10" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/sys/ios/AppleHeap.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"3AAFBC175E64B3B528950A61" = {
+		"C765AF2441C0E0F4C13FB40C" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "B53DCE42D01157229A70D8DA";
+			"fileRef" = "569843517CCAEA47654D5C10";
 		};
-		"A061707611F38DC9B2489983" = {
+		"3941F0BAF019A13DA43BC591" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/sys/ios/AppleAssertions.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"4F04F4E6A33DFEF3052DAA5C" = {
+		"31500AB60BA719E7C0548E6E" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "A061707611F38DC9B2489983";
+			"fileRef" = "3941F0BAF019A13DA43BC591";
 		};
-		"06E13EEA789240D179EB5025" = {
+		"085ABAE3A9DD7AD3E6DCE090" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/idlib/hashing/CRC32.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"D609638616D8A0E44F3812AE" = {
+		"841A548FB514B00EB92A2759" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "06E13EEA789240D179EB5025";
+			"fileRef" = "085ABAE3A9DD7AD3E6DCE090";
 		};
-		"09FB7A56070E8579BA363C1D" = {
+		"2E12A19B18541488A85F1B89" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/idlib/hashing/MD4.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"20A96733CC837A0BF926EDA8" = {
+		"FB2B9E3CFA5630866295EA7F" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "09FB7A56070E8579BA363C1D";
+			"fileRef" = "2E12A19B18541488A85F1B89";
 		};
-		"5C1A162F4E3D7104B72908E0" = {
+		"845B0732F872C3F5E6EE0199" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/idlib/hashing/MD5.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"3CCEE4778E21C3A090E40688" = {
+		"7D7DA3FCEAD639E5F0A17B99" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "5C1A162F4E3D7104B72908E0";
+			"fileRef" = "845B0732F872C3F5E6EE0199";
 		};
-		"A7C3C1F69AF99CB83D445AD9" = {
+		"8F868D807E6C6A4FB2082566" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/idlib/Str.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"D3778C155B7DD1C9E947C018" = {
+		"1105D0E3C64992CD695B071D" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "A7C3C1F69AF99CB83D445AD9";
+			"fileRef" = "8F868D807E6C6A4FB2082566";
 		};
-		"A0BD8550C83B2FF00E864D83" = {
+		"FA70CD624BDB026FD45A85C7" = {
 			"isa" = "PBXFileReference";
 			"lastKnownFileType" = "sourcecode.cpp.cpp";
 			"path" = "../neo/idlib/containers/HashIndex.cpp";
 			"sourceTree" = "SOURCE_ROOT";
 		};
-		"A56AEFB726FC8401F10435C9" = {
+		"DC95ABACFF748C1042CA70AE" = {
 			"isa" = "PBXBuildFile";
-			"fileRef" = "A0BD8550C83B2FF00E864D83";
+			"fileRef" = "FA70CD624BDB026FD45A85C7";
+		};
+		"5CC711351528F4B528B57E9F" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Math.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"BE052C65415AA3109F8E494F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5CC711351528F4B528B57E9F";
+		};
+		"F6C47DBFDDA1CCDBD1876DD6" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Vector.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"B25A388423CB54BAFE9B8D55" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "F6C47DBFDDA1CCDBD1876DD6";
+		};
+		"50E94010A4368B5D8F65DBB5" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Matrix.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"CF0E22D59C3A745E43A775F1" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "50E94010A4368B5D8F65DBB5";
+		};
+		"02AEA460DF13AF8359395CEC" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Angles.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"68912A6A040DF3E320F54ACE" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "02AEA460DF13AF8359395CEC";
+		};
+		"3161369E08148658B6240507" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Quat.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"E94B5DE804944C8FEC506386" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "3161369E08148658B6240507";
+		};
+		"75F89A2B10B7619188E6CAA0" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Rotation.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"20B672AB42E128FA56403085" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "75F89A2B10B7619188E6CAA0";
+		};
+		"5312F98C9449598C7B097988" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Plane.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"EE1FE6338EF65BD1223DFF2A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "5312F98C9449598C7B097988";
+		};
+		"218E43291665CF1DF86A59BA" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Pluecker.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"AFB37F4EFF1AF2F693D9E9E3" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "218E43291665CF1DF86A59BA";
+		};
+		"CF15ECB5FEF6923D3F95629F" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Complex.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"3622B7E11BC1D5DEF3A540FA" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "CF15ECB5FEF6923D3F95629F";
+		};
+		"48910E04743CFCA54391CE64" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Polynomial.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"880BC5AB424FECF94AA196F7" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "48910E04743CFCA54391CE64";
+		};
+		"6EB788121A6BFDE64C5A9F03" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.cpp.cpp";
+			"path" = "../neo/idlib/math/Ode.cpp";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"F3343B54A08997DFEB6EE938" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "6EB788121A6BFDE64C5A9F03";
 		};
 		"AC9E9A9E21693F1C6DB7BEF7" = {
 			"isa" = "PBXFileReference";
@@ -149,33 +276,43 @@
 			"isa" = "PBXBuildFile";
 			"fileRef" = "10C000FE8E6BB4782D64A765";
 		};
+		"1AF0F6E3D405803A6C3ED8D9" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "BE017B29C3785CCC16F23303";
+		};
 		"0A3E27B8CA818264D75C8D81" = {
 			"isa" = "PBXGroup";
-			"children" = ("A8792157CB4F27FB949C035F");
+			"children" = ("A8792157CB4F27FB949C035F", "BE017B29C3785CCC16F23303");
 			"name" = "Products";
 			"sourceTree" = "<group>";
 		};
 		"0D6E4079E36703EBD37C0072" = {
 			"isa" = "PBXGroup";
-			"children" = ("215F99740AA7B7424080DD1D", "B6816367EA786B07192C675A", "445F0D1386E294209FA27DC1", "B53DCE42D01157229A70D8DA", "A061707611F38DC9B2489983", "06E13EEA789240D179EB5025", "09FB7A56070E8579BA363C1D", "5C1A162F4E3D7104B72908E0", "A7C3C1F69AF99CB83D445AD9", "A0BD8550C83B2FF00E864D83", "AC9E9A9E21693F1C6DB7BEF7", "9CEEC13202AFBF12EE3ABB99", "84A3E64DD5A213EA661BD513", "10C000FE8E6BB4782D64A765", "0A3E27B8CA818264D75C8D81");
+			"children" = ("215F99740AA7B7424080DD1D", "B6816367EA786B07192C675A", "445F0D1386E294209FA27DC1", "1E50AF6F3EC6E9D26F2EDC3A", "569843517CCAEA47654D5C10", "3941F0BAF019A13DA43BC591", "085ABAE3A9DD7AD3E6DCE090", "2E12A19B18541488A85F1B89", "845B0732F872C3F5E6EE0199", "8F868D807E6C6A4FB2082566", "FA70CD624BDB026FD45A85C7", "5CC711351528F4B528B57E9F", "F6C47DBFDDA1CCDBD1876DD6", "50E94010A4368B5D8F65DBB5", "02AEA460DF13AF8359395CEC", "3161369E08148658B6240507", "75F89A2B10B7619188E6CAA0", "5312F98C9449598C7B097988", "218E43291665CF1DF86A59BA", "CF15ECB5FEF6923D3F95629F", "48910E04743CFCA54391CE64", "6EB788121A6BFDE64C5A9F03", "AC9E9A9E21693F1C6DB7BEF7", "9CEEC13202AFBF12EE3ABB99", "84A3E64DD5A213EA661BD513", "10C000FE8E6BB4782D64A765", "0A3E27B8CA818264D75C8D81");
 			"sourceTree" = "<group>";
 		};
 		"878A52FC5FF6A57D50B7B870" = {
 			"isa" = "PBXSourcesBuildPhase";
 			"buildActionMask" = 2147483647;
-			"files" = ("DF7D0365A68EF2E74526C8CC", "9343551852BC3210EE000D8E", "ED85C019B4188F9F19893592", "3AAFBC175E64B3B528950A61", "4F04F4E6A33DFEF3052DAA5C", "D609638616D8A0E44F3812AE", "20A96733CC837A0BF926EDA8", "3CCEE4778E21C3A090E40688", "D3778C155B7DD1C9E947C018", "A56AEFB726FC8401F10435C9");
+			"files" = ("DF7D0365A68EF2E74526C8CC", "9343551852BC3210EE000D8E", "ED85C019B4188F9F19893592", "D26EE319FBF91B1326E6C85D");
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
 		"E2AA269EB967A8853A258BFA" = {
 			"isa" = "PBXFrameworksBuildPhase";
 			"buildActionMask" = 2147483647;
-			"files" = ("43BA24C8D74EDC0A9771F4D8", "CC2D4F67539A772323228093");
+			"files" = ("43BA24C8D74EDC0A9771F4D8", "CC2D4F67539A772323228093", "1AF0F6E3D405803A6C3ED8D9");
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
 		"41D311A605520FC7B8B9A980" = {
 			"isa" = "PBXResourcesBuildPhase";
 			"buildActionMask" = 2147483647;
 			"files" = ("7F868F51FBC9395A61B9E16F");
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"01E13CB02D246D616DEAF076" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ("C765AF2441C0E0F4C13FB40C", "31500AB60BA719E7C0548E6E", "841A548FB514B00EB92A2759", "FB2B9E3CFA5630866295EA7F", "7D7DA3FCEAD639E5F0A17B99", "1105D0E3C64992CD695B071D", "DC95ABACFF748C1042CA70AE", "BE052C65415AA3109F8E494F", "B25A388423CB54BAFE9B8D55", "CF0E22D59C3A745E43A775F1", "68912A6A040DF3E320F54ACE", "E94B5DE804944C8FEC506386", "20B672AB42E128FA56403085", "EE1FE6338EF65BD1223DFF2A", "AFB37F4EFF1AF2F693D9E9E3", "3622B7E11BC1D5DEF3A540FA", "880BC5AB424FECF94AA196F7", "F3343B54A08997DFEB6EE938");
 			"runOnlyForDeploymentPostprocessing" = 0;
 		};
 		"488864B3D19480A82F7F1786" = {
@@ -191,6 +328,22 @@
 				"GCC_OPTIMIZATION_LEVEL" = "0";
 				"DEBUG_INFORMATION_FORMAT" = "dwarf";
 				"GCC_PREPROCESSOR_DEFINITIONS" = ("$(inherited)", "ID_IOS_CORE_LIBRARY=1", "_DEBUG=1");
+				"GCC_STRICT_ALIASING" = "NO";
+				"GCC_FAST_MATH" = "NO";
+			};
+		};
+		"3188EDF6B11408C5994CCAC8" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"ARCHS" = "arm64";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"PRODUCT_NAME" = "DoomIdlib";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SKIP_INSTALL" = "YES";
+				"CODE_SIGNING_ALLOWED" = "NO";
+				"CODE_SIGNING_REQUIRED" = "NO";
 			};
 		};
 		"952548237D7F645F11D1E7B6" = {
@@ -224,6 +377,22 @@
 				"GCC_OPTIMIZATION_LEVEL" = "s";
 				"DEBUG_INFORMATION_FORMAT" = "dwarf-with-dsym";
 				"GCC_PREPROCESSOR_DEFINITIONS" = ("$(inherited)", "ID_IOS_CORE_LIBRARY=1");
+				"GCC_STRICT_ALIASING" = "NO";
+				"GCC_FAST_MATH" = "NO";
+			};
+		};
+		"3DCF4B73EB119A8AFE5181B1" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"ARCHS" = "arm64";
+				"ONLY_ACTIVE_ARCH" = "NO";
+				"PRODUCT_NAME" = "DoomIdlib";
+				"SUPPORTED_PLATFORMS" = "iphoneos iphonesimulator";
+				"SUPPORTS_MACCATALYST" = "NO";
+				"SKIP_INSTALL" = "YES";
+				"CODE_SIGNING_ALLOWED" = "NO";
+				"CODE_SIGNING_REQUIRED" = "NO";
 			};
 		};
 		"E2D3A31BEAA1368FC62DA77A" = {
@@ -256,12 +425,41 @@
 			"defaultConfigurationIsVisible" = 0;
 			"defaultConfigurationName" = "Release";
 		};
+		"CEB8BEDB7F27D3FC056C589A" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("3188EDF6B11408C5994CCAC8", "3DCF4B73EB119A8AFE5181B1");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"8AA7A5A2CD70C7BAC6BF43D9" = {
+			"isa" = "PBXNativeTarget";
+			"buildConfigurationList" = "CEB8BEDB7F27D3FC056C589A";
+			"buildPhases" = ("01E13CB02D246D616DEAF076");
+			"buildRules" = ();
+			"dependencies" = ();
+			"name" = "DoomIdlib";
+			"productName" = "DoomIdlib";
+			"productReference" = "BE017B29C3785CCC16F23303";
+			"productType" = "com.apple.product-type.library.static";
+		};
+		"61C28D30BFEDE541B17B5A1F" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "244210E48437B6556980A702";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "8AA7A5A2CD70C7BAC6BF43D9";
+			"remoteInfo" = "DoomIdlib";
+		};
+		"D265829B2D3EC4063EC5974D" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "8AA7A5A2CD70C7BAC6BF43D9";
+			"targetProxy" = "61C28D30BFEDE541B17B5A1F";
+		};
 		"34A04005BCAF206EEC990BD9" = {
 			"isa" = "PBXNativeTarget";
 			"buildConfigurationList" = "4A807E8A027297B0B93701FB";
 			"buildPhases" = ("878A52FC5FF6A57D50B7B870", "E2AA269EB967A8853A258BFA", "41D311A605520FC7B8B9A980");
 			"buildRules" = ();
-			"dependencies" = ();
+			"dependencies" = ("D265829B2D3EC4063EC5974D");
 			"name" = "DoomBFGHarness";
 			"productName" = "DoomBFGHarness";
 			"productReference" = "A8792157CB4F27FB949C035F";
@@ -281,7 +479,7 @@
 			"productRefGroup" = "0A3E27B8CA818264D75C8D81";
 			"projectDirPath" = "";
 			"projectRoot" = "";
-			"targets" = ("34A04005BCAF206EEC990BD9");
+			"targets" = ("8AA7A5A2CD70C7BAC6BF43D9", "34A04005BCAF206EEC990BD9");
 		};
 	};
 	"rootObject" = "244210E48437B6556980A702";

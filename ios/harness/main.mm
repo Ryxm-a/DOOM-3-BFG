@@ -7,6 +7,7 @@
 static_assert(sizeof(void *) == 8, "The harness requires a 64-bit target");
 static_assert(sizeof(std::uint32_t) == 4, "Unexpected fixed-width integer size");
 extern "C" const char *BFG_RunCoreTests();
+extern "C" const char *BFG_RunMathTests();
 
 @interface HarnessViewController : UIViewController
 @end
@@ -16,7 +17,7 @@ extern "C" const char *BFG_RunCoreTests();
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor colorWithRed:0.07 green:0.08 blue:0.10 alpha:1.0];
     UILabel *label = [[UILabel alloc] init];
-    label.text = @"DOOM 3 BFG\niOS port harness - Phase 03b\n\nCore idlib fixtures run here.\nEngine and gameplay are not integrated.";
+    label.text = @"DOOM 3 BFG\niOS port harness - Phase 04a\n\nCore and scalar math fixtures run here.\nEngine and gameplay are not integrated.";
     label.textColor = UIColor.whiteColor;
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont systemFontOfSize:22 weight:UIFontWeightMedium];
@@ -43,10 +44,14 @@ extern "C" const char *BFG_RunCoreTests();
         const char *coreResult = BFG_RunCoreTests();
         NSData *coreData = [[NSString stringWithUTF8String:coreResult] dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *coreTests = [NSJSONSerialization JSONObjectWithData:coreData options:0 error:nil];
+        const char *mathResult = BFG_RunMathTests();
+        NSData *mathData = [[NSString stringWithUTF8String:mathResult] dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *mathTests = [NSJSONSerialization JSONObjectWithData:mathData options:0 error:nil];
         NSDictionary *receipt = @{
             @"schema": @1, @"phase": @2, @"nonce": nonce,
             @"event": @"viewDidAppear", @"engine_linked": @NO,
             @"pointer_bits": @(sizeof(void *) * 8), @"core_tests": coreTests,
+            @"math_tests": mathTests,
             @"bundle_id": NSBundle.mainBundle.bundleIdentifier,
             @"system_version": UIDevice.currentDevice.systemVersion,
             @"device_family": UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone"
