@@ -1,8 +1,9 @@
 # Native iOS harness
 
-Phase 02 builds `DoomBFGHarness`, a UIKit/Objective-C++ application for iPhone
-and iPad. It has no engine sources, gameplay, game assets, renderer, or audio.
-The launch screen explicitly identifies this scope. Bundled `COPYING.txt`
+`DoomBFGHarness` began in Phase 02 as a UIKit/Objective-C++ application for iPhone
+and iPad. Phase 03 adds selected upstream idlib core utilities and runtime
+fixtures. The complete engine, gameplay, game assets, renderer and audio remain
+unintegrated. The screen explicitly identifies this scope. Bundled `COPYING.txt`
 retains the upstream GPL notice; corresponding source is in this repository.
 
 `toolchain.json` pins Xcode 16.4 (16F6), SDK/runtime 18.5, ARM64 device and
@@ -40,6 +41,12 @@ Reports and screenshots live under `artifacts/ios-preflight` and
 Both directories are ignored. Use a fresh output directory when rerunning
 Xcode verification (`-resultBundlePath` must not already exist).
 The Actions workflow uploads reports on failure as well as success.
+
+For the Phase 03 fixture gate, CI uses `--families iPhone`. The default still
+runs both simulator families. The receipt includes a `core_tests` result for
+the current selected idlib source group, in addition to the launch nonce.
+Fixture diagnostics in `ios/tests/IdlibDiagnostics.cpp` are test support and
+must be replaced by actual Lib.cpp/framework services during engine integration.
 
 `xcodebuild -help` from the actual pinned Xcode records archive/export options
 in the reports. This phase does not archive, export an IPA, sign an app, or

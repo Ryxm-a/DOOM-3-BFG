@@ -90,7 +90,8 @@ def verify(output, families=("iPhone", "iPad")):
             run(["xcrun", "simctl", "bootstatus", udid, "-b"], timeout=300)
             run(["xcrun", "simctl", "install", udid, simulator_app])
             nonce = uuid.uuid4().hex
-            run(["xcrun", "simctl", "launch", udid, manifest["bundle_id"]],
+            run(["xcrun", "simctl", "launch", "--stdout=" + str(output / (family + ".stdout.log")),
+                 "--stderr=" + str(output / (family + ".stderr.log")), udid, manifest["bundle_id"]],
                 command_env=dict(env, SIMCTL_CHILD_BFG_HARNESS_NONCE=nonce))
             container = Path(run(["xcrun", "simctl", "get_app_container", udid, manifest["bundle_id"], "data"]))
             receipt_path = container / "Documents/phase02-launch.json"
@@ -98,6 +99,13 @@ def verify(output, families=("iPhone", "iPad")):
             while not receipt_path.is_file() and time.monotonic() < deadline:
                 time.sleep(0.5)
             if not receipt_path.is_file():
+                try:
+                    run(["xcrun", "simctl", "spawn", udid, "log", "show", "--last", "3m", "--style", "compact",
+                         "--predicate", 'process == "' + manifest["name"] + '"'], timeout=60)
+                except (OSError, RuntimeError):
+                    pass
+                for crash in (Path.home() / "Library/Logs/DiagnosticReports").glob(manifest["name"] + "*.ips"):
+                    shutil.copyfile(crash, output / crash.name)
                 raise RuntimeError(f"{family} did not produce a viewDidAppear receipt")
             receipt = json.loads(receipt_path.read_text())
             expected = {"schema": 1, "phase": 2, "nonce": nonce, "event": "viewDidAppear", "engine_linked": False,

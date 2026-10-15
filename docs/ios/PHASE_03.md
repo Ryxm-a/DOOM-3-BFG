@@ -58,5 +58,54 @@ reports passed ABI, endian, allocation, list-sort, CRC32, MD4-RFC1320 and
 MD5-RFC1321 fixtures. `preflight.json` also passes. The full Phase 03 gate
 remains open pending 03b.
 
+03a harness artifact: [11939930318](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38661613413/artifacts/11939930318),
+SHA-256 `9bca1841bbbc96fec0e6b43a75df109f23b681eac7527a6d229b0a6e02b11ba8`.
+SDK artifact: [11939915427](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38661613413/artifacts/11939915427),
+SHA-256 `f304f603ea5bbcab2296a383f93af6d4f96bd2ac98f5293f4d2d6f28e73e6589`.
+Actual source: `6366dd0ff7d8ec297a1d7b711a8db4dbbc5e69dd`; Xcode 16.4/16F6,
+both SDKs/runtime 18.5, macos-15-arm64 image 20260907.0337.1, OS 15.7.9/24G830.
+
 03b follows after the 03a gate: core strings and hash-index fixtures, with
 framework diagnostics separated only as necessary for a standalone core build.
+
+## 03b implementation — verification pending
+
+The manifest now compiles upstream `Str.cpp` and `containers/HashIndex.cpp`.
+The core boundary imports the actual `idLib` declarations from `Lib.h` while
+conditionally omitting its avalanche of unrelated headers. Selected original
+Math/Vector headers supply the real types required by string colours and
+vector hash keys; this does not compile or verify the full math library yet.
+Apple `ID_TLS` uses C++ `thread_local ptrdiff_t`; only declarations are used in
+this phase, and TLS/thread lifecycle stress remains Phase 05.
+
+String diagnostics call existing `idLib` wrappers to avoid depending directly
+on the `idCommon` class. `ios/tests/IdlibDiagnostics.cpp` is an explicit fixture
+provider for those diagnostics, logging to stdio and aborting on fatal/error.
+It is not a production engine service and must be excluded when `Lib.cpp` and
+the framework are integrated. The framework-only `testStrId` console/localization
+command is explicitly excluded from the core build; all string algorithms and
+the hash-index implementation are real upstream code.
+
+Apple formatting uses bounded C99 `vsnprintf` with the engine's -1-on-truncation
+contract for `vsnPrintf`, including size 0/null and size 1 guards. `snPrintf`'s
+temporary buffer and `va` are bounded on Apple. Windows-specific formatting
+branches remain intact. `va`'s rotating static buffers are still not thread-safe;
+concurrency review remains Phase 05.
+
+Added fixtures: 404-byte string growth/deep copy/alias assignment; searches and
+case comparisons/hash; path joining/extensions/basename; varargs formatting;
+exact-fit/truncation/size-one/size-zero/null with destination guard bytes;
+400 hash-index entries exercising growth/collisions, traversal, removal and copy.
+The core fixture assertions now print the exact failing expression and line.
+
+Local generation/audit/Python syntax/whitespace checks pass. Actual run at
+`9e24730c8d3583c8d35b16e745450fae39dc9ee5`:
+[38662472580](https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38662472580).
+No compile/runtime success is claimed here until its evidence is inspected.
+
+Run 38662472580 failed the runtime gate: both ARM64 builds and metadata checks
+passed, simulator boot/install/launch returned success, but no fixture receipt
+was written. Phase 03 remains OPEN. Its report did not capture app stdio; added
+explicit stdout/stderr redirection and app-filtered simulator/crash diagnostics
+on missing receipts to identify and repair the actual runtime failure. No tests
+were weakened or removed.
