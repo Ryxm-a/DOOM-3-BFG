@@ -1,0 +1,8 @@
+{
+  "name": "DoomBFGHarness",
+  "bundle_id": "org.doom3bfg.ios.harness",
+  "sources": ["main.mm"],
+  "resources": ["../../COPYING.txt"],
+  "frameworks": ["UIKit", "Foundation"],
+  "info_plist": "Info.plist"
+}

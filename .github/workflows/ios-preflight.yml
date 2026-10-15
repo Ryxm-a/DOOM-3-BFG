@@ -24,6 +24,8 @@ jobs:
           persist-credentials: false
       - name: Verify immutable upstream audit
         run: python3 scripts/ios/audit_repository.py --check
+      - name: Verify deterministic Xcode project
+        run: python3 scripts/ios/generate_project.py --check
       - name: Record runner image
         shell: bash
         run: |
@@ -32,6 +34,8 @@ jobs:
           sw_vers >> artifacts/ios-preflight/runner.txt
       - name: Compile and link Apple SDK probes
         run: python3 scripts/ios/preflight.py
+      - name: Build harness and verify iPhone and iPad simulator launches
+        run: python3 scripts/ios/verify_harness.py
       - name: Upload SDK evidence (also on failure)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -39,4 +43,12 @@ jobs:
           name: ios-preflight-${{ github.sha }}
           path: artifacts/ios-preflight/
           if-no-files-found: error
+          retention-days: 14
+      - name: Upload harness evidence (also on failure)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-harness-${{ github.sha }}
+          path: artifacts/ios-harness/
+          if-no-files-found: warn
           retention-days: 14
