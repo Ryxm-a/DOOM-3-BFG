@@ -50,3 +50,17 @@ Apple documents deprecated OpenGL ES and provides Metal migration guidance:
 The inspected [macOS 15 runner manifest](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md)
 lists Xcode 16.4/16F6 and iOS 18.5. Availability is still subject to actual preflight.
 No local Apple build tools are available on this Windows host.
+
+## Phase 02 review boundary
+
+Reviewed the added UIKit lifecycle/launch receipt in `ios/harness/main.mm`,
+the explicit harness manifest/Info.plist, deterministic project generator and
+generated scheme/project, SDK probe script, harness verification script, and
+Actions checkout/evidence steps. The harness source manifest includes exactly
+one Objective-C++ source and the upstream GPL notice; it includes no engine,
+bundled dependency or game-asset source. No upstream blob is changed in this
+phase. The full-file inventory continues to verify against the same baseline.
+
+This is semantic review of the new app/build harness only. Upstream engine
+subsystems remain mechanically screened and await their assigned port phases.
+CI results and exact toolchain/runner evidence are in `PHASE_02.md`.

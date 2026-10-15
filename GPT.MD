@@ -9,9 +9,16 @@ ZIP named `.ipa`, or unsigned archive is not the final deliverable.
 
 Date: 2026-10-15 (Asia/Karachi). Branch: `codex/ios-port`.
 Preserved upstream: `1caba1979589971b5ed44e315d9ead30b278d8b4`.
-Phase 01 is complete within its **local audit and CI preparation scope**.
-Next session: Phase 02. Engine compilation, Apple SDK execution, signing,
-IPA export, and gameplay have **not** been verified.
+Phases 01 and 02 are complete within their stated scopes. Phase 02 has actual
+macOS CI evidence for SDK compilation and native harness launch on iPhone/iPad.
+Current work: Phase 03. Engine compilation, signing, IPA export, and gameplay
+have **not** been verified.
+
+User override (2026-10-15): continue all phases sequentially in this chat without
+stopping after one phase. This supersedes the one-phase-per-session limit below;
+all implementation/verification gates, source preservation, and credential/asset
+requirements still apply. Update the handoff after each phase and proceed to the
+next eligible phase. Unavailable external inputs cannot be invented or bypassed.
 
 ## Rules for every session
 
@@ -73,8 +80,8 @@ an independent subphase. macOS build evidence is required from Phase 02 onward.
 | Phase | Implementation boundary | Gate to close the phase | State |
 | --- | --- | --- | --- |
 | 01 | Immutable inventory, dependency/platform triage, asset/signing requirements, phase plan, pinned SDK preflight workflow | Every upstream blob covered; audit regenerates identically; local tooling checks; all unavailable validation labelled | COMPLETE |
-| 02 | Obtain GitHub access, create/use writable fork, push branch, run preflight; native Xcode app harness and simulator launch | macOS CI probes pass, device harness links, simulator launches; archive/export help recorded; distinguish harness from engine | NEXT |
-| 03 | Apple platform defines/includes/types/asserts/allocators and core string/container/hash utilities | Selected idlib files compile for device/simulator; width/alignment/endian and allocation tests pass | Pending |
+| 02 | Obtain GitHub access, create/use writable fork, push branch, run preflight; native Xcode app harness and simulator launch | macOS CI probes pass, device harness links, simulator launches; archive/export help recorded; distinguish harness from engine | COMPLETE |
+| 03 | Apple platform defines/includes/types/asserts/allocators and core string/container/hash utilities | Selected idlib files compile for device/simulator; width/alignment/endian and allocation tests pass | CURRENT |
 | 04 | Remaining idlib math, generic SIMD, jobs data and ARM64 compatibility | idlib static library builds; representative SIMD/reference and serialization checks pass | Pending |
 | 05 | POSIX threads, signals, timing, atomics, TLS and CPU detection | Job/thread lifecycle, wakeup, and atomic stress checks in simulator; device compile passes | Pending |
 | 06 | Bundled JPEG, zlib, amplitude and TiMidity source lists/portability | Static dependencies compile/link in both targets; decompression and image/audio fixture checks; notice manifest | Pending |
@@ -102,11 +109,13 @@ Final acceptance must identify whether real-device installation was tested.
 
 ## Requirements that may need user input
 
-No game assets or Apple credentials are needed for Phase 01. GitHub write/Actions
-access is needed for Phase 02: only `origin` (id-Software/DOOM-3-BFG) exists;
-no writable fork, GitHub CLI, or authenticated GitHub connector was discovered.
-Request an authorized GitHub credential/connection when publishing/running CI;
-create/configure the writable repository automatically if that access permits it.
+GitHub access was established in Phase 02 using the existing Git Credential Manager
+account `Ryxm-a` (no credential is stored in the repository). The writable remote
+`fork` is `https://github.com/Ryxm-a/DOOM-3-BFG.git`; `origin` remains upstream
+and must not receive pushes. `codex/ios-port` tracks `fork/codex/ios-port`.
+GitHub CLI/connector are not installed; authenticated API requests were used for
+CI status and evidence downloads. Assets/signing credentials are still not needed
+for the early phases.
 
 At Phase 20, supply the entire patched **BFG Edition** PC installation `base`
 directory at `private-assets/pc/base/`, or authorize a private, authenticated
@@ -132,3 +141,22 @@ See `docs/ios/BUILD_REQUIREMENTS.md` for the proposed secret contract.
 - Upstream source remains unchanged. Existing `.vs/` content is preserved/ignored.
 - Additional local verification and exact results are recorded in
   `docs/ios/PHASE_01.md`; review it before Phase 02.
+
+## Phase 02 evidence and handoff
+
+- Created the user-owned writable fork and pushed only to `fork/codex/ios-port`.
+- Native UIKit/Objective-C++ harness, explicit source manifest, standard-library
+  deterministic Xcode project generator, device/simulator build and nonce-verified
+  iPhone/iPad launch checks. The harness does not link engine sources.
+- Passing macOS run at `b41cd12cc35afe96c9c95b59b15d558d67dc3e08`:
+  https://github.com/Ryxm-a/DOOM-3-BFG/actions/runs/38660266257
+- Xcode 16.4 / 16F6, both SDKs 18.5, ARM64, deployment target 15.0;
+  runner `macos-15-arm64`, image `20260907.0337.1`, macOS 15.7.9 / 24G830.
+- SDK framework and Metal compilation pass; harness links for IOS and
+  IOSSIMULATOR; both simulator families emit `viewDidAppear` receipts on iOS 18.5.
+  Downloaded screenshots were visually inspected. Archive/export help is captured.
+  No archive/signing/IPA or engine/gameplay claim is made.
+- Fixed the real initial CI failure by fetching history (`fetch-depth: 0`).
+  Local generation/stale-output/Windows-guard checks pass. All 1,115 upstream
+  blobs remain unchanged through Phase 02. See `docs/ios/PHASE_02.md`.
+- Continue Phase 03 under the user's continuous-work override above.
