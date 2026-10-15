@@ -47,10 +47,16 @@ extern "C" const char *BFG_RunMathTests() {
     const idComplex complex = idComplex(1, 2) * idComplex(3, -4);
     RequireMath(Near(complex.r, 11.0f) && Near(complex.i, 2.0f));
     idODE_RK4 integrator(2, ConstantDerivative, nullptr);
+    idODE_Euler euler(2, ConstantDerivative, nullptr);
+    idODE_Midpoint midpoint(2, ConstantDerivative, nullptr);
+    idODE_RK4Adaptive adaptive(2, ConstantDerivative, nullptr);
     const float state[2] = {1.0f, 3.0f};
     float next[2] = {};
-    integrator.Evaluate(state, next, 0.0f, 0.5f);
-    RequireMath(Near(next[0], 2.0f) && Near(next[1], 2.5f));
+    idODE *integrators[] = {&euler, &midpoint, &integrator, &adaptive};
+    for (idODE *method : integrators) {
+        method->Evaluate(state, next, 0.0f, 0.5f);
+        RequireMath(Near(next[0], 2.0f) && Near(next[1], 2.5f));
+    }
 
     // Exact little-endian IEEE-754 bytes, independent of pointer/long width.
     const idVec3 serialized(1.0f, -2.0f, 0.5f);

@@ -98,8 +98,13 @@ idODE_Midpoint::~idODE_Midpoint
 =============
 */
 idODE_Midpoint::~idODE_Midpoint() {
+#if defined(ID_IOS)
+	delete[] tmpState;
+	delete[] derivatives;
+#else
 	delete tmpState;
 	delete derivatives;
+#endif
 }
 
 /*
@@ -155,11 +160,19 @@ idODE_RK4::~idODE_RK4
 =============
 */
 idODE_RK4::~idODE_RK4() {
+#if defined(ID_IOS)
+	delete[] tmpState;
+	delete[] d1;
+	delete[] d2;
+	delete[] d3;
+	delete[] d4;
+#else
 	delete tmpState;
 	delete d1;
 	delete d2;
 	delete d3;
 	delete d4;
+#endif
 }
 
 /*
@@ -228,12 +241,21 @@ idODE_RK4Adaptive::~idODE_RK4Adaptive
 =============
 */
 idODE_RK4Adaptive::~idODE_RK4Adaptive() {
+#if defined(ID_IOS)
+	delete[] tmpState;
+	delete[] d1;
+	delete[] d1half;
+	delete[] d2;
+	delete[] d3;
+	delete[] d4;
+#else
 	delete tmpState;
 	delete d1;
 	delete d1half;
 	delete d2;
 	delete d3;
 	delete d4;
+#endif
 }
 
 /*
