@@ -1,0 +1,11 @@
+{
+  "runner": "macos-15",
+  "developer_dir": "/Applications/Xcode_16.4.app/Contents/Developer",
+  "xcode_version": "16.4",
+  "xcode_build": "16F6",
+  "sdk_version": "18.5",
+  "deployment_target": "15.0",
+  "device_arch": "arm64",
+  "simulator_arch": "arm64",
+  "frameworks": ["UIKit", "Foundation", "Metal", "MetalKit", "QuartzCore", "AVFoundation", "AudioToolbox", "GameController", "Security"]
+}

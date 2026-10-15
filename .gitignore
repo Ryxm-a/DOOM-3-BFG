@@ -1,0 +1,12 @@
+# Local IDE state already present before the port.
+.vs/
+__pycache__/
+*.pyc
+/build/
+/artifacts/
+/private-assets/
+/private-signing/
+*.p12
+*.mobileprovision
+*.ipa
+*.xcarchive/

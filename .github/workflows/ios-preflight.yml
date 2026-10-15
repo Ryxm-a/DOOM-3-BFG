@@ -1,0 +1,42 @@
+name: iOS toolchain preflight
+
+on:
+  push:
+    branches: ["codex/ios-port"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-sdk:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify immutable upstream audit
+        run: python3 scripts/ios/audit_repository.py --check
+      - name: Record runner image
+        shell: bash
+        run: |
+          mkdir -p artifacts/ios-preflight
+          printf '%s\n' "ImageOS=${ImageOS:-unknown}" "ImageVersion=${ImageVersion:-unknown}" > artifacts/ios-preflight/runner.txt
+          sw_vers >> artifacts/ios-preflight/runner.txt
+      - name: Compile and link Apple SDK probes
+        run: python3 scripts/ios/preflight.py
+      - name: Upload SDK evidence (also on failure)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-preflight-${{ github.sha }}
+          path: artifacts/ios-preflight/
+          if-no-files-found: error
+          retention-days: 14
